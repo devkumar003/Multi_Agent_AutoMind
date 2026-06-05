@@ -6,6 +6,7 @@ from models.schemas import ProblemRequest
 from graph import SwarmOrchestrator
 from db import init_db, get_db, UserStats, ActivityHistory, Challenge, User, Submission, Contest
 import auth
+from auth import get_current_user
 from jose import JWTError, jwt
 
 import pandas as pd
@@ -63,13 +64,13 @@ async def broadcast_status(message: dict):
                 connected_clients.remove(client)
 
 # Include newly refactored routers
-from routers import auth, user, code, data
+from routers import auth as auth_routes, user as user_routes, code as code_routes, data as data_routes
 
-app.include_router(auth.router)
-app.include_router(user.router)
-app.include_router(user.leaderboard_router)
-app.include_router(code.router)
-app.include_router(data.router)
+app.include_router(auth_routes.router)
+app.include_router(user_routes.router)
+app.include_router(user_routes.leaderboard_router)
+app.include_router(code_routes.router)
+app.include_router(data_routes.router)
 
 from typing import Optional
 
@@ -429,6 +430,23 @@ def delete_history(current_user: User = Depends(get_current_user), db: Session =
     db.query(ActivityHistory).filter(ActivityHistory.user_id == current_user.id).delete()
     db.commit()
     return {"success": True}
+
+@app.get("/api/system/health")
+def get_system_health():
+    import requests
+    import time
+    try:
+        start = time.time()
+        res = requests.get("http://127.0.0.1:11434/api/tags", timeout=3)
+        latency = round((time.time() - start) * 1000)
+        if res.status_code == 200:
+            models = [m["name"] for m in res.json().get("models", [])]
+            # Pick the primary model name to display
+            model_name = "Qwen" if any("qwen" in m for m in models) else (models[0].split(":")[0].capitalize() if models else "Unknown")
+            return {"status": "connected", "model": model_name, "latency": latency}
+        return {"status": "disconnected", "model": "Error", "latency": 0}
+    except Exception:
+        return {"status": "disconnected", "model": "Offline", "latency": 0}
 
 @app.get("/api/system/status")
 def get_system_status():
