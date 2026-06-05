@@ -5,7 +5,7 @@ import useAgentStore from '../store/useAgentStore';
 
 const SpinnerRing = ({ isThinking, isCompleted, colorClass }) => (
     <svg className="absolute inset-0 w-full h-full -rotate-90 scale-[1.15]" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+        <circle cx="50" cy="50" r="48" fill="none" stroke="var(--border-light)" strokeWidth="1" />
         {isThinking && (
             <motion.circle
                 cx="50" cy="50" r="48" fill="none" className={colorClass} strokeWidth="2" strokeLinecap="round" strokeDasharray="100 200"
@@ -29,26 +29,26 @@ const AgentCard = ({ agent, index }) => {
     const isCompleted = agent.status === 'completed';
 
     const icons = {
-        'Research Agent': <Search size={24} className={isCompleted ? 'text-primary' : 'text-gray-400'} />,
-        'Reasoning Agent': <Brain size={24} className={isCompleted ? 'text-secondary' : 'text-gray-400'} />,
-        'Coding Agent': <Code size={24} className={isCompleted ? 'text-accent' : 'text-gray-400'} />,
-        'Critic Agent': <CheckCircle size={24} className={isCompleted ? 'text-green-400' : 'text-gray-400'} />,
-        'Optimizer Agent': <Zap size={24} className={isCompleted ? 'text-yellow-400' : 'text-gray-400'} />,
-        'Smart Routing Agent': <Zap size={24} className={isCompleted ? 'text-yellow-400' : 'text-gray-400'} />,
+        'Research Agent': <Search size={24} className={isCompleted ? 'text-accent-secondary' : 'text-text-muted'} />,
+        'Reasoning Agent': <Brain size={24} className={isCompleted ? 'text-accent-primary' : 'text-text-muted'} />,
+        'Coding Agent': <Code size={24} className={isCompleted ? 'text-accent-success' : 'text-text-muted'} />,
+        'Critic Agent': <CheckCircle size={24} className={isCompleted ? 'text-accent-danger' : 'text-text-muted'} />,
+        'Optimizer Agent': <Zap size={24} className={isCompleted ? 'text-accent-warning' : 'text-text-muted'} />,
+        'Smart Routing Agent': <Zap size={24} className={isCompleted ? 'text-accent-warning' : 'text-text-muted'} />,
     };
 
     const getColors = (id) => {
-        if (id.includes('Research')) return { text: 'text-[#00D9FF]', border: 'border-[#00D9FF]', stroke: 'stroke-[#00D9FF]', bg: 'bg-[#00D9FF]', shadow: 'shadow-[#00D9FF]' };
-        if (id.includes('Reasoning')) return { text: 'text-[#8B5CF6]', border: 'border-[#8B5CF6]', stroke: 'stroke-[#8B5CF6]', bg: 'bg-[#8B5CF6]', shadow: 'shadow-[#8B5CF6]' };
-        if (id.includes('Coding')) return { text: 'text-[#00FFA3]', border: 'border-[#00FFA3]', stroke: 'stroke-[#00FFA3]', bg: 'bg-[#00FFA3]', shadow: 'shadow-[#00FFA3]' };
-        if (id.includes('Critic')) return { text: 'text-[#FF3366]', border: 'border-[#FF3366]', stroke: 'stroke-[#FF3366]', bg: 'bg-[#FF3366]', shadow: 'shadow-[#FF3366]' };
-        return { text: 'text-[#F59E0B]', border: 'border-[#F59E0B]', stroke: 'stroke-[#F59E0B]', bg: 'bg-[#F59E0B]', shadow: 'shadow-[#F59E0B]' };
+        if (id.includes('Research')) return { text: 'text-accent-secondary', border: 'border-accent-secondary', stroke: 'stroke-accent-secondary', bg: 'bg-accent-secondary', shadow: 'shadow-accent-secondary' };
+        if (id.includes('Reasoning')) return { text: 'text-accent-primary', border: 'border-accent-primary', stroke: 'stroke-accent-primary', bg: 'bg-accent-primary', shadow: 'shadow-accent-primary' };
+        if (id.includes('Coding')) return { text: 'text-accent-success', border: 'border-accent-success', stroke: 'stroke-accent-success', bg: 'bg-accent-success', shadow: 'shadow-accent-success' };
+        if (id.includes('Critic')) return { text: 'text-accent-danger', border: 'border-accent-danger', stroke: 'stroke-accent-danger', bg: 'bg-accent-danger', shadow: 'shadow-accent-danger' };
+        return { text: 'text-accent-warning', border: 'border-accent-warning', stroke: 'stroke-accent-warning', bg: 'bg-accent-warning', shadow: 'shadow-accent-warning' };
     };
     const c = getColors(agent.id);
 
     return (
         <div className="flex flex-col items-center gap-4 relative z-10 w-32">
-            <div className="text-[10px] font-bold text-gray-500 tracking-[0.2em] uppercase">Step 0{index + 1}</div>
+            <div className="text-[10px] font-bold text-text-muted tracking-[0.2em] uppercase">Step 0{index + 1}</div>
             
             {/* Holographic Core */}
             <motion.div
@@ -56,7 +56,7 @@ const AgentCard = ({ agent, index }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
                 className={`relative flex items-center justify-center w-20 h-20 rounded-full transition-all duration-700
-                    ${isThinking ? `shadow-[0_0_40px_rgba(0,0,0,0.5)] bg-[#0B1020]` : 'bg-[#060816] border border-white/5'}
+                    ${isThinking ? `shadow-lg bg-panel-hover` : 'bg-panel border border-border-light'}
                 `}
             >
                 <SpinnerRing isThinking={isThinking} isCompleted={isCompleted} colorClass={c.stroke} />
@@ -69,11 +69,11 @@ const AgentCard = ({ agent, index }) => {
                     ${isThinking ? `${c.bg}/20 shadow-[inset_0_0_15px_rgba(255,255,255,0.1)]` : 'bg-transparent'}
                     ${isCompleted ? `${c.bg}/10` : ''}
                 `}>
-                    {React.cloneElement(icons[agent.id], { className: isCompleted || isThinking ? c.text : 'text-gray-500' })}
+                    {React.cloneElement(icons[agent.id], { className: isCompleted || isThinking ? c.text : 'text-text-muted' })}
                     
                     {isCompleted && (
                         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className={`absolute 0 right-0 ${c.bg} rounded-full p-0.5 shadow-[0_0_10px_rgba(0,0,0,0.8)]`}>
-                            <CheckCircle size={10} className="text-[#060816]" />
+                            <CheckCircle size={10} className="text-[color:var(--bg-base)]" />
                         </motion.div>
                     )}
                 </div>
@@ -81,7 +81,7 @@ const AgentCard = ({ agent, index }) => {
 
             {/* Labels */}
             <div className="flex flex-col items-center text-center mt-2">
-                <h3 className={`text-xs font-bold tracking-wider uppercase mb-1.5 ${isCompleted || isThinking ? 'text-white drop-shadow-md' : 'text-gray-500'}`}>
+                <h3 className={`text-xs font-bold tracking-wider uppercase mb-1.5 ${isCompleted || isThinking ? 'text-text-primary drop-shadow-md' : 'text-text-muted'}`}>
                     {agent.id}
                 </h3>
                 <div className="h-8 flex items-center justify-center">
@@ -92,7 +92,7 @@ const AgentCard = ({ agent, index }) => {
                     ) : isCompleted ? (
                         <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 ${c.bg}/10 ${c.text} rounded border ${c.border}/20`}>Verified</span>
                     ) : (
-                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 bg-white/5 text-gray-600 rounded">Standby</span>
+                        <span className="text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 bg-panel border border-border-light text-text-muted rounded">Standby</span>
                     )}
                 </div>
             </div>
@@ -119,21 +119,21 @@ const AgentWorkflow = ({ vertical = false }) => {
                         <AgentCard agent={agent} index={i} />
                         {i < displayAgents.length - 1 && (
                             <div className="flex flex-col items-center h-10 w-[1px] relative">
-                                <div className="absolute inset-0 w-[1px] bg-white/5 mx-auto overflow-hidden">
+                                <div className="absolute inset-0 w-[1px] bg-border-light mx-auto overflow-hidden">
                                     {displayAgents[i].status === 'completed' && (
                                         <motion.div
                                             key={`vtrack-${i}`}
                                             initial={{ height: 0 }}
                                             animate={{ height: '100%' }}
                                             transition={{ duration: 0.6 }}
-                                            className="w-full bg-[#00D9FF] shadow-[0_0_10px_#00D9FF]"
+                                            className="w-full bg-accent-secondary shadow-lg"
                                         />
                                     )}
                                     {displayAgents[i].status === 'thinking' && (
                                         <>
-                                            <div className="absolute inset-0 bg-white/10" />
+                                            <div className="absolute inset-0 bg-border-light" />
                                             <motion.div
-                                                className="absolute left-0 top-0 w-[1px] h-1/3 bg-gradient-to-b from-transparent via-[#00D9FF] to-transparent shadow-[0_0_8px_#00D9FF]"
+                                                className="absolute left-0 top-0 w-[1px] h-1/3 bg-gradient-to-b from-transparent via-accent-secondary to-transparent shadow-lg"
                                                 initial={{ y: '-100%' }}
                                                 animate={{ y: '300%' }}
                                                 transition={{ repeat: Infinity, duration: 1.2, ease: 'linear' }}
@@ -157,21 +157,21 @@ const AgentWorkflow = ({ vertical = false }) => {
                         <AgentCard agent={agent} index={i} />
                         {i < displayAgents.length - 1 && (
                             <div className="flex-1 min-w-[80px] max-w-[120px] flex items-center justify-center -mt-10 px-2">
-                                <div className="relative w-full h-[1px] bg-white/5 overflow-hidden">
+                                <div className="relative w-full h-[1px] bg-border-light overflow-hidden">
                                     {displayAgents[i].status === 'completed' && (
                                         <motion.div
                                             key={`tracker-${i}`}
                                             initial={{ width: 0 }}
                                             animate={{ width: '100%' }}
                                             transition={{ duration: 0.8 }}
-                                            className="absolute inset-0 bg-[#00D9FF] shadow-[0_0_10px_#00D9FF]"
+                                            className="absolute inset-0 bg-accent-secondary shadow-lg"
                                         />
                                     )}
                                     {displayAgents[i].status === 'thinking' && (
                                         <>
-                                            <div className="absolute inset-0 bg-white/10" />
+                                            <div className="absolute inset-0 bg-border-light" />
                                             <motion.div
-                                                className="absolute top-0 left-0 h-[1px] w-1/3 bg-gradient-to-r from-transparent via-[#00D9FF] to-transparent shadow-[0_0_8px_#00D9FF]"
+                                                className="absolute top-0 left-0 h-[1px] w-1/3 bg-gradient-to-r from-transparent via-accent-secondary to-transparent shadow-lg"
                                                 initial={{ x: '-100%' }}
                                                 animate={{ x: '300%' }}
                                                 transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
@@ -189,4 +189,3 @@ const AgentWorkflow = ({ vertical = false }) => {
 };
 
 export default AgentWorkflow;
-

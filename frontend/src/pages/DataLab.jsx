@@ -133,50 +133,50 @@ const DataLab = () => {
                     const type = spec.chart_type?.toLowerCase() || 'bar';
                     
                     return (
-                        <div key={idx} className="p-6 bg-[#0A0D1B] border border-[#1C1F33] rounded-xl h-[450px] flex flex-col shadow-lg transition-all hover:border-[#A568FF]/50">
-                            <h3 className="text-center text-gray-200 font-bold tracking-wide text-lg">{spec.title}</h3>
+                        <div key={idx} className="p-6 bg-panel border border-border-light rounded-xl h-[450px] flex flex-col shadow-lg transition-all hover:border-accent-secondary/50">
+                            <h3 className="text-center text-text-primary font-bold tracking-wide text-lg">{spec.title}</h3>
                             {spec.insight && (
-                                <p className="text-center text-xs text-gray-400 mt-2 mb-6 italic px-4 leading-relaxed">"{spec.insight}"</p>
+                                <p className="text-center text-xs text-text-muted mt-2 mb-6 italic px-4 leading-relaxed">"{spec.insight}"</p>
                             )}
                             <div className="flex-1 min-h-0 relative">
                                 <ResponsiveContainer width="100%" height="100%">
                                     {(() => {
                                         if (type === 'bar') return (
                                             <BarChart data={cData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" stroke="#1C1F33" />
-                                                <XAxis dataKey={spec.x} stroke="#4B5563" tick={{fontSize: 11}} />
-                                                <YAxis stroke="#4B5563" tick={{fontSize: 11}} />
-                                                <Tooltip contentStyle={{ backgroundColor: '#0F1223', borderColor: '#1C1F33', color: '#fff', borderRadius: '8px' }} />
-                                                <Legend wrapperStyle={{ fontSize: '12px' }} />
-                                                <Bar dataKey={spec.y} fill="#A568FF" radius={[4, 4, 0, 0]} />
+                                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-medium)" />
+                                                <XAxis dataKey={spec.x} stroke="var(--text-muted)" tick={{fontSize: 11}} />
+                                                <YAxis stroke="var(--text-muted)" tick={{fontSize: 11}} />
+                                                <Tooltip contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
+                                                <Bar dataKey={spec.y} fill="var(--accent-secondary)" radius={[4, 4, 0, 0]} />
                                             </BarChart>
                                         );
                                         if (type === 'line') return (
                                             <LineChart data={cData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" stroke="#1C1F33" />
-                                                <XAxis dataKey={spec.x} stroke="#4B5563" tick={{fontSize: 11}} />
-                                                <YAxis stroke="#4B5563" tick={{fontSize: 11}} />
-                                                <Tooltip contentStyle={{ backgroundColor: '#0F1223', borderColor: '#1C1F33', color: '#fff', borderRadius: '8px' }} />
-                                                <Legend wrapperStyle={{ fontSize: '12px' }} />
-                                                <Line type="monotone" dataKey={spec.y} stroke="#3B82F6" strokeWidth={3} dot={{ fill: '#3B82F6', r: 3 }} activeDot={{ r: 5 }} />
+                                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-medium)" />
+                                                <XAxis dataKey={spec.x} stroke="var(--text-muted)" tick={{fontSize: 11}} />
+                                                <YAxis stroke="var(--text-muted)" tick={{fontSize: 11}} />
+                                                <Tooltip contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
+                                                <Line type="monotone" dataKey={spec.y} stroke="var(--accent-primary)" strokeWidth={3} dot={{ fill: 'var(--accent-primary)', r: 3 }} activeDot={{ r: 5 }} />
                                             </LineChart>
                                         );
                                         if (type === 'pie') return (
                                             <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                                                <Tooltip contentStyle={{ backgroundColor: '#0F1223', borderColor: '#1C1F33', color: '#fff', borderRadius: '8px' }} />
-                                                <Pie data={cData} dataKey={spec.y} nameKey={spec.x} cx="50%" cy="50%" outerRadius={110} fill="#10B981" label={{fontSize: 11, fill: '#ccc'}} />
+                                                <Tooltip contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Pie data={cData} dataKey={spec.y} nameKey={spec.x} cx="50%" cy="50%" outerRadius={110} fill="var(--accent-success)" label={{fontSize: 11, fill: 'var(--text-muted)'}} />
                                             </PieChart>
                                         );
                                         if (type === 'scatter') return (
                                             <ScatterChart margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                <CartesianGrid strokeDasharray="3 3" stroke="#1C1F33" />
-                                                <XAxis dataKey={spec.x} type="category" name={spec.x} stroke="#4B5563" tick={{fontSize: 11}} />
-                                                <YAxis dataKey={spec.y} type="number" name={spec.y} stroke="#4B5563" tick={{fontSize: 11}} />
-                                                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: '#0F1223', borderColor: '#1C1F33', color: '#fff', borderRadius: '8px' }} />
-                                                <Scatter name={spec.title} data={cData} fill="#F59E0B" />
+                                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-medium)" />
+                                                <XAxis dataKey={spec.x} type="category" name={spec.x} stroke="var(--text-muted)" tick={{fontSize: 11}} />
+                                                <YAxis dataKey={spec.y} type="number" name={spec.y} stroke="var(--text-muted)" tick={{fontSize: 11}} />
+                                                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Scatter name={spec.title} data={cData} fill="var(--accent-warning)" />
                                             </ScatterChart>
                                         );
-                                        return <div className="text-gray-500 h-full flex items-center justify-center">Unsupported chart type</div>;
+                                        return <div className="text-text-muted h-full flex items-center justify-center">Unsupported chart type</div>;
                                     })()}
                                 </ResponsiveContainer>
                             </div>
@@ -188,29 +188,29 @@ const DataLab = () => {
     };
 
     return (
-        <div className="h-full w-full p-8 overflow-y-auto">
+        <div className="h-full w-full p-8 overflow-y-auto bg-bg-base">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="text-blue-400">
+                    <div className="text-accent-primary">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-white leading-tight">Data Lab</h1>
-                        <p className="text-gray-400 text-sm">Interact, clean, and strictly query your datasets directly in the browser.</p>
+                        <h1 className="text-2xl font-bold text-text-primary leading-tight">Data Lab</h1>
+                        <p className="text-text-secondary text-sm">Interact, clean, and strictly query your datasets directly in the browser.</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
-                    <label className="whitespace-nowrap bg-[#0F1223] border border-[#1C1F33] hover:border-[#A568FF]/50 text-white font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors text-sm shadow-sm cursor-pointer">
+                    <label className="whitespace-nowrap bg-panel border border-border-light hover:border-accent-secondary/50 text-text-primary font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors text-sm shadow-sm cursor-pointer">
                         <UploadCloud size={16}/> {isUploading ? 'Uploading...' : 'Upload CSV/Excel'}
                         <input type="file" accept=".csv, .xlsx, .xls" className="hidden" onChange={handleFileUpload} />
                     </label>
-                    <button onClick={handleCleanData} className="whitespace-nowrap bg-gradient-to-r from-[#A568FF] to-[#8C4FFF] text-white font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all hover:scale-105 shadow-lg shadow-purple-500/20 text-sm">
+                    <button onClick={handleCleanData} className="whitespace-nowrap bg-gradient-to-r from-accent-secondary to-accent-primary text-white font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all hover:scale-105 shadow-lg border-none text-sm">
                         <Wand2 size={16}/> {isCleaning ? 'Cleaning...' : 'Clean Data'}
                     </button>
-                    <button onClick={() => { setActiveTab('insights'); handleVisualize(""); }} disabled={!fileId || isVisualizing} className={`whitespace-nowrap font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all text-sm shadow-sm ${!fileId ? 'bg-[#0F1223] border border-[#1C1F33] text-gray-500' : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-emerald-500/20 neon-pulse'}`}>
+                    <button onClick={() => { setActiveTab('insights'); handleVisualize(""); }} disabled={!fileId || isVisualizing} className={`whitespace-nowrap font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all text-sm shadow-sm border-none ${!fileId ? 'bg-panel border border-border-light text-text-muted' : 'bg-gradient-to-r from-accent-success to-emerald-600 text-white shadow-emerald-500/20 neon-pulse'}`}>
                         <Sparkles size={16}/> {isVisualizing ? 'Generating Insights...' : 'Auto-Insights'}
                     </button>
-                    <button onClick={handleExportCSV} className="whitespace-nowrap bg-[#0F1223] border border-[#1C1F33] hover:border-gray-500 text-white font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors text-sm shadow-sm">
+                    <button onClick={handleExportCSV} className="whitespace-nowrap bg-panel border border-border-light hover:border-border-medium text-text-primary font-medium px-4 py-2.5 rounded-xl flex items-center gap-2 transition-colors text-sm shadow-sm">
                         <Download size={16}/> Export CSV
                     </button>
                 </div>
@@ -219,27 +219,27 @@ const DataLab = () => {
             {/* Top Dataset Stats Bar */}
             {integrity && (
                 <div className="flex flex-wrap items-center gap-4 mb-8">
-                    <div className="bg-[#131627] border border-[#1C1F33] px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
-                        <span className="text-xs text-gray-500 uppercase tracking-widest font-bold">Rows</span>
-                        <span className="text-sm text-white font-mono">{integrity.total_rows.toLocaleString()}</span>
+                    <div className="bg-panel border border-border-light px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
+                        <span className="text-xs text-text-muted uppercase tracking-widest font-bold">Rows</span>
+                        <span className="text-sm text-text-primary font-mono">{integrity.total_rows.toLocaleString()}</span>
                     </div>
-                    <div className="bg-[#131627] border border-[#1C1F33] px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
-                        <span className="text-xs text-gray-500 uppercase tracking-widest font-bold">Columns</span>
-                        <span className="text-sm text-white font-mono">{integrity.total_cols}</span>
+                    <div className="bg-panel border border-border-light px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
+                        <span className="text-xs text-text-muted uppercase tracking-widest font-bold">Columns</span>
+                        <span className="text-sm text-text-primary font-mono">{integrity.total_cols}</span>
                     </div>
-                    <div className="bg-[#131627] border border-[#1C1F33] px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
-                        <span className="text-xs text-gray-500 uppercase tracking-widest font-bold">Memory</span>
-                        <span className="text-sm text-[#4F93FF] font-mono">{(integrity.total_rows * integrity.total_cols * 8 / 1024 / 1024).toFixed(2)} MB</span>
+                    <div className="bg-panel border border-border-light px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
+                        <span className="text-xs text-text-muted uppercase tracking-widest font-bold">Memory</span>
+                        <span className="text-sm text-accent-primary font-mono">{(integrity.total_rows * integrity.total_cols * 8 / 1024 / 1024).toFixed(2)} MB</span>
                     </div>
-                    <div className="bg-[#131627] border border-[#1C1F33] px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
-                        <span className="text-xs text-gray-500 uppercase tracking-widest font-bold">Missing</span>
-                        <span className={`text-sm font-mono ${integrity.null_entropy > 0 ? 'text-red-400' : 'text-green-400'}`}>{integrity.null_entropy}%</span>
+                    <div className="bg-panel border border-border-light px-4 py-2 rounded-xl flex items-center gap-3 shadow-inner">
+                        <span className="text-xs text-text-muted uppercase tracking-widest font-bold">Missing</span>
+                        <span className={`text-sm font-mono ${integrity.null_entropy > 0 ? 'text-accent-danger' : 'text-accent-success'}`}>{integrity.null_entropy}%</span>
                     </div>
                 </div>
             )}
 
-            <div className="bg-[#0F1223] border border-[#1C1F33] rounded-[2rem] p-5 mb-8 shadow-xl">
-                <div className="flex items-center gap-2 text-[#A568FF] font-bold text-sm mb-3 px-2 tracking-wide uppercase">
+            <div className="glass-panel !rounded-[2rem] p-5 mb-8 shadow-xl">
+                <div className="flex items-center gap-2 text-accent-secondary font-bold text-sm mb-3 px-2 tracking-wide uppercase">
                     <Sparkles size={16} /> Query Data via Qwen2.5-Coder
                 </div>
                 <div className="relative">
@@ -291,18 +291,18 @@ const DataLab = () => {
                             }
                         }}
                         placeholder={fileId ? "Ask Qwen2.5 to analyze your data (e.g. 'average salary', 'salary by month'...)" : "Upload a CSV/Excel file first to unlock Qwen2.5 data querying..."} 
-                        className={`w-full bg-[#131627] border border-[#1C1F33] rounded-xl py-4 pl-5 pr-32 text-sm text-gray-300 transition-colors shadow-inner focus:outline-none focus:border-[#A568FF] ${!fileId ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                        className={`w-full bg-bg-base border border-border-light rounded-xl py-4 pl-5 pr-32 text-sm text-text-primary transition-colors shadow-inner focus:outline-none focus:border-accent-secondary ${!fileId ? 'opacity-50 cursor-not-allowed' : ''}`} 
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                         {isQuerying || isVisualizing ? (
-                            <div className="text-[#A568FF] text-xs font-bold uppercase tracking-widest streaming-text">
+                            <div className="text-accent-secondary text-xs font-bold uppercase tracking-widest streaming-text">
                                 {streamText || "Initializing..."}
                             </div>
                         ) : (
                             <button
                                 onClick={() => handleVisualize(query)}
                                 disabled={!fileId || !query.trim()}
-                                className={`p-2 rounded-lg transition-colors ${!fileId || !query.trim() ? 'text-gray-500 cursor-not-allowed' : 'bg-[#A568FF]/20 hover:bg-[#A568FF]/40 text-[#A568FF] neon-pulse'}`}
+                                className={`p-2 rounded-lg transition-colors border-none ${!fileId || !query.trim() ? 'text-text-muted cursor-not-allowed' : 'bg-accent-secondary/20 hover:bg-accent-secondary/40 text-accent-secondary neon-pulse'}`}
                                 title="Visualize Specific Query"
                             >
                                 <PieChartIcon size={18} />
@@ -314,12 +314,12 @@ const DataLab = () => {
                 {/* Command Chips */}
                 {fileId && !isQuerying && (
                     <div className="flex items-center gap-2 mt-4 overflow-x-auto no-scrollbar pb-1">
-                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mr-2">Quick Commands:</span>
+                        <span className="text-[10px] text-text-muted uppercase tracking-widest font-bold mr-2">Quick Commands:</span>
                         {['/clean nulls', '/chart revenue', '/find anomalies', '/generate summary'].map(cmd => (
                             <button 
                                 key={cmd}
                                 onClick={() => setQuery(cmd)}
-                                className="text-xs bg-[#131627] hover:bg-[#A568FF]/20 text-gray-400 hover:text-[#A568FF] border border-[#1C1F33] hover:border-[#A568FF]/50 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                                className="text-xs bg-bg-base hover:bg-accent-secondary/20 text-text-secondary hover:text-accent-secondary border border-border-light hover:border-accent-secondary/50 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
                             >
                                 {cmd}
                             </button>
@@ -329,11 +329,11 @@ const DataLab = () => {
                 
                 {/* Simulated AI Stats Header */}
                 {(queryResult || charts.length > 0) && !isQuerying && (
-                    <div className="flex items-center gap-4 mt-6 border-b border-[#1C1F33] pb-2 mb-4">
-                        <div className="flex items-center gap-2 text-xs text-green-400 font-mono bg-green-400/10 px-2 py-1 rounded">
+                    <div className="flex items-center gap-4 mt-6 border-b border-border-light pb-2 mb-4">
+                        <div className="flex items-center gap-2 text-xs text-accent-success font-mono bg-accent-success/10 px-2 py-1 rounded">
                             <span>Confidence: {confidence}%</span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-blue-400 font-mono bg-blue-400/10 px-2 py-1 rounded">
+                        <div className="flex items-center gap-2 text-xs text-accent-primary font-mono bg-accent-primary/10 px-2 py-1 rounded">
                             <span>Generated in {processingTime}s</span>
                         </div>
                     </div>
@@ -344,37 +344,37 @@ const DataLab = () => {
             </div>
 
             {cleanSummary && (
-                <div className="bg-[#0F1223] border border-[#1C1F33] rounded-[2rem] p-5 mb-8 shadow-xl">
-                    <div className="flex items-center gap-2 text-[#A568FF] font-bold text-sm mb-3 px-2 tracking-wide uppercase">
+                <div className="glass-panel !rounded-[2rem] p-5 mb-8 shadow-xl">
+                    <div className="flex items-center gap-2 text-accent-secondary font-bold text-sm mb-3 px-2 tracking-wide uppercase">
                         <Wand2 size={16} /> Data Cleaning Audit Log
                     </div>
-                    <div className="p-4 bg-[#0A0D1B] border border-[#1C1F33] rounded-xl">
-                        <pre className="text-sm font-mono text-green-400 whitespace-pre-wrap leading-relaxed">{cleanSummary}</pre>
+                    <div className="p-4 bg-bg-base border border-border-light rounded-xl">
+                        <pre className="text-sm font-mono text-accent-success whitespace-pre-wrap leading-relaxed">{cleanSummary}</pre>
                     </div>
                 </div>
             )}
 
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 min-h-[600px]">
                 {/* Left Side: Workspace Dataset */}
-                <div className="xl:col-span-3 bg-[#0F1223] border border-[#1C1F33] rounded-3xl flex flex-col shadow-xl overflow-hidden relative">
-                    <div className="flex flex-wrap items-center justify-between p-5 border-b border-[#1C1F33] bg-[#0A0D1B]">
+                <div className="xl:col-span-3 glass-panel !rounded-3xl flex flex-col shadow-xl overflow-hidden relative">
+                    <div className="flex flex-wrap items-center justify-between p-5 border-b border-border-light bg-panel">
                         <div className="flex items-center gap-6">
-                            <span className="text-gray-300 font-bold tracking-wide">Active Dataset Workspace</span>
+                            <span className="text-text-primary font-bold tracking-wide">Active Dataset Workspace</span>
                             
                             {fileId && (
-                                <div className="flex items-center gap-4 border-l border-[#1C1F33] pl-6">
-                                    <button onClick={() => setActiveTab('preview')} className={`text-sm font-medium transition-colors ${activeTab === 'preview' ? 'text-[#A568FF] border-b-2 border-[#A568FF] pb-1' : 'text-gray-500 hover:text-gray-300'}`}>Data Preview</button>
-                                    <button onClick={() => setActiveTab('insights')} className={`text-sm font-medium transition-colors ${activeTab === 'insights' ? 'text-[#A568FF] border-b-2 border-[#A568FF] pb-1' : 'text-gray-500 hover:text-gray-300'}`}>AI Insights</button>
-                                    <button onClick={() => setActiveTab('sql')} className={`text-sm font-medium transition-colors ${activeTab === 'sql' ? 'text-[#A568FF] border-b-2 border-[#A568FF] pb-1' : 'text-gray-500 hover:text-gray-300'}`}>SQL Output</button>
+                                <div className="flex items-center gap-4 border-l border-border-light pl-6">
+                                    <button onClick={() => setActiveTab('preview')} className={`text-sm font-medium transition-colors border-none bg-transparent ${activeTab === 'preview' ? 'text-accent-secondary border-b-2 border-accent-secondary pb-1' : 'text-text-muted hover:text-text-primary'}`}>Data Preview</button>
+                                    <button onClick={() => setActiveTab('insights')} className={`text-sm font-medium transition-colors border-none bg-transparent ${activeTab === 'insights' ? 'text-accent-secondary border-b-2 border-accent-secondary pb-1' : 'text-text-muted hover:text-text-primary'}`}>AI Insights</button>
+                                    <button onClick={() => setActiveTab('sql')} className={`text-sm font-medium transition-colors border-none bg-transparent ${activeTab === 'sql' ? 'text-accent-secondary border-b-2 border-accent-secondary pb-1' : 'text-text-muted hover:text-text-primary'}`}>SQL Output</button>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-auto bg-[#070913] relative custom-scrollbar">
+                    <div className="flex-1 overflow-auto bg-bg-base relative custom-scrollbar">
                         {!fileId ? (
                             <div 
-                                className={`h-full w-full flex flex-col items-center justify-center p-10 ${isDragging ? 'dropzone-glow border-[#A568FF]' : 'border-2 border-dashed border-[#1C1F33]'}`}
+                                className={`h-full w-full flex flex-col items-center justify-center p-10 ${isDragging ? 'dropzone-glow border-accent-secondary' : 'border-2 border-dashed border-border-light'}`}
                                 onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                                 onDragLeave={() => setIsDragging(false)}
                                 onDrop={(e) => {
@@ -385,29 +385,29 @@ const DataLab = () => {
                                     }
                                 }}
                             >
-                                <UploadCloud size={48} className={`mb-4 ${isDragging ? 'text-[#A568FF] animate-bounce' : 'text-gray-600'}`} />
-                                <h3 className="text-xl font-bold text-white mb-2">Drop your CSV/Excel dataset here</h3>
-                                <p className="text-sm text-gray-500 mb-8 max-w-md text-center">To instantly unlock AI-powered insights, anomaly detection, and natural language SQL querying.</p>
+                                <UploadCloud size={48} className={`mb-4 ${isDragging ? 'text-accent-secondary animate-bounce' : 'text-text-muted'}`} />
+                                <h3 className="text-xl font-bold text-text-primary mb-2">Drop your CSV/Excel dataset here</h3>
+                                <p className="text-sm text-text-secondary mb-8 max-w-md text-center">To instantly unlock AI-powered insights, anomaly detection, and natural language SQL querying.</p>
                                 
                                 <div className="grid grid-cols-2 gap-4 w-full max-w-md">
-                                    <div className="bg-[#131627] border border-[#1C1F33] p-4 rounded-xl text-center shadow-sm opacity-60">
-                                        <Sparkles size={16} className="text-[#A568FF] mx-auto mb-2" />
-                                        <span className="text-xs font-medium text-gray-400">"Analyze sales trends"</span>
+                                    <div className="bg-panel border border-border-light p-4 rounded-xl text-center shadow-sm opacity-60">
+                                        <Sparkles size={16} className="text-accent-secondary mx-auto mb-2" />
+                                        <span className="text-xs font-medium text-text-secondary">"Analyze sales trends"</span>
                                     </div>
-                                    <div className="bg-[#131627] border border-[#1C1F33] p-4 rounded-xl text-center shadow-sm opacity-60">
-                                        <Zap size={16} className="text-[#EBB556] mx-auto mb-2" />
-                                        <span className="text-xs font-medium text-gray-400">"Find missing values"</span>
+                                    <div className="bg-panel border border-border-light p-4 rounded-xl text-center shadow-sm opacity-60">
+                                        <Zap size={16} className="text-accent-warning mx-auto mb-2" />
+                                        <span className="text-xs font-medium text-text-secondary">"Find missing values"</span>
                                     </div>
                                 </div>
                                 
-                                <label className="mt-8 bg-[#A568FF] hover:bg-[#8C4FFF] text-white font-medium px-6 py-3 rounded-xl cursor-pointer transition-all hover:-translate-y-1 shadow-lg shadow-purple-500/20">
+                                <label className="mt-8 bg-accent-secondary hover:brightness-110 text-white font-medium px-6 py-3 rounded-xl cursor-pointer transition-all hover:-translate-y-1 shadow-lg shadow-purple-500/20">
                                     Browse Files
                                     <input type="file" accept=".csv, .xlsx, .xls" className="hidden" onChange={handleFileUpload} />
                                 </label>
                             </div>
                         ) : activeTab === 'preview' ? (
                             <table className="w-full text-sm text-left whitespace-nowrap">
-                                <thead className="text-[11px] text-gray-500 uppercase bg-[#0F1223] border-b border-[#1C1F33] sticky top-0 z-10 tracking-widest font-bold">
+                                <thead className="text-[11px] text-text-muted uppercase bg-panel border-b border-border-light sticky top-0 z-10 tracking-widest font-bold">
                                     <tr>
                                         <th className="px-6 py-4">#</th>
                                         {columns.map(col => <th key={col} className="px-6 py-4 truncate max-w-[150px]">{col}</th>)}
@@ -415,10 +415,10 @@ const DataLab = () => {
                                 </thead>
                                 <tbody className="font-mono text-[13px]">
                                     {data.map((row, i) => (
-                                        <tr key={i} className="border-b border-[#1C1F33] hover:bg-white/[0.02] transition-colors">
-                                            <td className="px-6 py-3.5 text-gray-600 select-none">{i+1}</td>
+                                        <tr key={i} className="border-b border-border-light hover:bg-panel-hover transition-colors">
+                                            <td className="px-6 py-3.5 text-text-muted select-none">{i+1}</td>
                                             {columns.map(col => (
-                                                <td key={col} className="px-6 py-3.5 text-gray-300 truncate max-w-[200px]">{String(row[col])}</td>
+                                                <td key={col} className="px-6 py-3.5 text-text-secondary truncate max-w-[200px]">{String(row[col])}</td>
                                             ))}
                                         </tr>
                                     ))}
@@ -430,11 +430,11 @@ const DataLab = () => {
                                     <svg width="400" height="400" viewBox="0 0 400 400">
                                         <defs>
                                             <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
-                                                <stop offset="0%" stopColor="#A568FF" stopOpacity="1" />
-                                                <stop offset="100%" stopColor="#A568FF" stopOpacity="0" />
+                                                <stop offset="0%" stopColor="var(--accent-secondary)" stopOpacity="1" />
+                                                <stop offset="100%" stopColor="var(--accent-secondary)" stopOpacity="0" />
                                             </radialGradient>
                                         </defs>
-                                        <g stroke="#A568FF" strokeWidth="1" strokeDasharray="4 4" opacity="0.5">
+                                        <g stroke="var(--accent-secondary)" strokeWidth="1" strokeDasharray="4 4" opacity="0.5">
                                             <line x1="200" y1="200" x2="100" y2="100" className="animate-pulse" />
                                             <line x1="200" y1="200" x2="300" y2="100" className="animate-pulse" style={{animationDelay: '0.2s'}} />
                                             <line x1="200" y1="200" x2="100" y2="300" className="animate-pulse" style={{animationDelay: '0.4s'}} />
@@ -459,24 +459,24 @@ const DataLab = () => {
                                     </svg>
                                 </div>
                                 <div className="z-10 text-center max-w-lg">
-                                    <h3 className="text-2xl font-bold text-white mb-4">Neural Data Graph</h3>
-                                    <p className="text-gray-400 mb-6 leading-relaxed">Our autonomous agents are mapping your dataset correlations in real-time. Use the <span className="text-[#A568FF] font-bold">Auto-Insights</span> button above to generate predictive models and visualizations.</p>
+                                    <h3 className="text-2xl font-bold text-text-primary mb-4">Neural Data Graph</h3>
+                                    <p className="text-text-secondary mb-6 leading-relaxed">Our autonomous agents are mapping your dataset correlations in real-time. Use the <span className="text-accent-secondary font-bold">Auto-Insights</span> button above to generate predictive models and visualizations.</p>
                                 </div>
                             </div>
                         ) : activeTab === 'sql' && queryResult ? (
                             <div className="p-8">
-                                <h3 className="text-lg font-bold text-white mb-4">Latest Execution Output</h3>
+                                <h3 className="text-lg font-bold text-text-primary mb-4">Latest Execution Output</h3>
                                 {queryResult.output && (
-                                    <pre className="text-sm font-mono text-gray-300 whitespace-pre-wrap bg-[#131627] p-6 rounded-xl border border-[#1C1F33]">{queryResult.output}</pre>
+                                    <pre className="text-sm font-mono text-text-secondary whitespace-pre-wrap bg-panel p-6 rounded-xl border border-border-light">{queryResult.output}</pre>
                                 )}
                                 {queryResult.image_base64 && (
-                                    <div className="mt-6 border border-[#1C1F33] rounded-xl overflow-hidden shadow-lg inline-block">
+                                    <div className="mt-6 border border-border-light rounded-xl overflow-hidden shadow-lg inline-block">
                                         <img src={`data:image/png;base64,${queryResult.image_base64}`} alt="Generated Plot" className="max-w-full h-auto bg-white" />
                                     </div>
                                 )}
                             </div>
                         ) : (
-                            <div className="h-full flex items-center justify-center text-gray-500">
+                            <div className="h-full flex items-center justify-center text-text-muted">
                                 No output available. Run a query first.
                             </div>
                         )}
@@ -486,63 +486,63 @@ const DataLab = () => {
                 {/* Right Sidebar: Integrity & Agents */}
                 <div className="xl:col-span-1 space-y-6">
                     {/* Grid Integrity */}
-                    <div className="bg-[#0F1223] border border-[#1C1F33] rounded-3xl p-6 shadow-xl flex flex-col relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-[50px] rounded-full pointer-events-none"></div>
+                    <div className="glass-panel !rounded-3xl p-6 shadow-xl flex flex-col relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-accent-primary/5 blur-[50px] rounded-full pointer-events-none"></div>
                         <div className="flex items-center justify-between mb-6 relative z-10">
-                            <h3 className="text-lg font-bold text-white tracking-wide">Grid Integrity</h3>
-                            <Settings2 size={16} className="text-gray-500" />
+                            <h3 className="text-lg font-bold text-text-primary tracking-wide">Grid Integrity</h3>
+                            <Settings2 size={16} className="text-text-muted" />
                         </div>
 
                         {integrity ? (
                             <div className="relative z-10">
                                 <div className="space-y-3 mb-6">
-                                    <div className="flex items-center justify-between bg-[#131627] border border-[#1C1F33] p-3 rounded-xl">
-                                        <span className="text-xs text-gray-400 font-medium">Rows</span>
-                                        <span className="text-sm text-white font-bold font-mono">{integrity.total_rows}</span>
+                                    <div className="flex items-center justify-between bg-bg-base border border-border-light p-3 rounded-xl">
+                                        <span className="text-xs text-text-muted font-medium">Rows</span>
+                                        <span className="text-sm text-text-primary font-bold font-mono">{integrity.total_rows}</span>
                                     </div>
-                                    <div className="flex items-center justify-between bg-[#131627] border border-[#1C1F33] p-3 rounded-xl">
-                                        <span className="text-xs text-gray-400 font-medium">Columns</span>
-                                        <span className="text-sm text-white font-bold font-mono">{integrity.total_cols}</span>
+                                    <div className="flex items-center justify-between bg-bg-base border border-border-light p-3 rounded-xl">
+                                        <span className="text-xs text-text-muted font-medium">Columns</span>
+                                        <span className="text-sm text-text-primary font-bold font-mono">{integrity.total_cols}</span>
                                     </div>
-                                    <div className="flex items-center justify-between bg-green-500/10 border border-green-500/20 p-3 rounded-xl">
-                                        <span className="text-xs text-green-400 font-medium">Integrity Score</span>
-                                        <span className="text-sm text-green-400 font-bold font-mono">{100 - integrity.null_entropy}%</span>
+                                    <div className="flex items-center justify-between bg-accent-success/10 border border-accent-success/20 p-3 rounded-xl">
+                                        <span className="text-xs text-accent-success font-medium">Integrity Score</span>
+                                        <span className="text-sm text-accent-success font-bold font-mono">{100 - integrity.null_entropy}%</span>
                                     </div>
                                 </div>
                                 
-                                <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">AI Suggestions</h4>
+                                <h4 className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">AI Suggestions</h4>
                                 <div className="space-y-2">
-                                    <button onClick={handleCleanData} className="w-full text-left text-xs bg-[#131627] hover:bg-blue-500/10 border border-[#1C1F33] hover:border-blue-500/30 text-gray-300 hover:text-blue-400 p-3 rounded-xl transition-colors">
+                                    <button onClick={handleCleanData} className="w-full text-left text-xs bg-bg-base hover:bg-accent-primary/10 border border-border-light hover:border-accent-primary/30 text-text-secondary hover:text-accent-primary p-3 rounded-xl transition-colors">
                                         • Remove duplicate rows
                                     </button>
-                                    <button onClick={handleCleanData} className="w-full text-left text-xs bg-[#131627] hover:bg-purple-500/10 border border-[#1C1F33] hover:border-purple-500/30 text-gray-300 hover:text-purple-400 p-3 rounded-xl transition-colors">
+                                    <button onClick={handleCleanData} className="w-full text-left text-xs bg-bg-base hover:bg-accent-secondary/10 border border-border-light hover:border-accent-secondary/30 text-text-secondary hover:text-accent-secondary p-3 rounded-xl transition-colors">
                                         • Impute missing null values
                                     </button>
                                 </div>
                             </div>
                         ) : (
                             <div className="space-y-3 relative z-10">
-                                <div className="h-10 bg-[#131627] border border-[#1C1F33] rounded-xl shimmer-bg"></div>
-                                <div className="h-10 bg-[#131627] border border-[#1C1F33] rounded-xl shimmer-bg"></div>
-                                <div className="h-10 bg-[#131627] border border-[#1C1F33] rounded-xl shimmer-bg"></div>
+                                <div className="h-10 bg-bg-base border border-border-light rounded-xl shimmer-bg"></div>
+                                <div className="h-10 bg-bg-base border border-border-light rounded-xl shimmer-bg"></div>
+                                <div className="h-10 bg-bg-base border border-border-light rounded-xl shimmer-bg"></div>
                             </div>
                         )}
                     </div>
                     
                     {/* Agent Activity Log */}
-                    <div className="bg-[#0F1223] border border-[#1C1F33] rounded-3xl p-6 shadow-xl flex flex-col h-64">
+                    <div className="glass-panel !rounded-3xl p-6 shadow-xl flex flex-col h-64">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-bold text-gray-300 tracking-wide flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            <h3 className="text-sm font-bold text-text-primary tracking-wide flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-accent-success animate-pulse"></div>
                                 Agent Activity
                             </h3>
                         </div>
                         <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3 font-mono text-[11px]">
                             {agentLogs.length === 0 ? (
-                                <div className="text-gray-600 italic">Waiting for swarm execution...</div>
+                                <div className="text-text-muted italic">Waiting for swarm execution...</div>
                             ) : (
                                 agentLogs.map((log, idx) => (
-                                    <div key={idx} className={`${log.includes('Failed') ? 'text-red-400' : log.includes('Successfully') ? 'text-green-400' : 'text-gray-400'}`}>
+                                    <div key={idx} className={`${log.includes('Failed') ? 'text-accent-danger' : log.includes('Successfully') ? 'text-accent-success' : 'text-text-secondary'}`}>
                                         {log}
                                     </div>
                                 ))

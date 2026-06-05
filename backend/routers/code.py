@@ -17,33 +17,20 @@ class CodeRunReq(BaseModel):
     code: str
     language: str = "python"
 
-def is_docker_installed():
-    try:
-        res = subprocess.run(["docker", "--version"], capture_output=True, text=True, timeout=2)
-        return res.returncode == 0
-    except:
-        return False
-
 @router.post("/run")
 def run_code(req: CodeRunReq, current_user: Optional[User] = Depends(get_current_user_optional), db: Session = Depends(get_db)):
-    use_docker = is_docker_installed()
-    
     if req.language == "javascript":
         ext = ".js"
         cmd = ["node"]
-        docker_image = "node:18-alpine"
     elif req.language == "c":
         ext = ".c"
         cmd = ["gcc"]
-        docker_image = "gcc:latest"
     elif req.language == "cpp":
         ext = ".cpp"
         cmd = ["g++"]
-        docker_image = "gcc:latest"
     else:
         ext = ".py"
         cmd = ["python"]
-        docker_image = "python:3.10-alpine"
         
     with tempfile.NamedTemporaryFile("w+", suffix=ext, delete=False, encoding="utf-8") as f:
         f.write(req.code)
@@ -55,54 +42,26 @@ def run_code(req: CodeRunReq, current_user: Optional[User] = Depends(get_current
     exit_code = -1
     
     try:
-        if use_docker:
-            # DOCKER ISOLATED EXECUTION
-            file_name = os.path.basename(temp_path)
-            file_dir = os.path.dirname(temp_path)
-            
-            if req.language in ["c", "cpp"]:
-                docker_cmd_compile = ["docker", "run", "--rm", "-v", f"{file_dir}:/app", "-w", "/app", docker_image, cmd[0], file_name, "-o", "out.exe"]
-                compile_res = subprocess.run(docker_cmd_compile, capture_output=True, text=True, timeout=15)
-                if compile_res.returncode != 0:
-                    output = f"Docker Compilation Error:\n{compile_res.stderr}"
-                    exit_code = compile_res.returncode
-                else:
-                    docker_cmd_run = ["docker", "run", "--rm", "-v", f"{file_dir}:/app", "-w", "/app", docker_image, "./out.exe"]
-                    run_res = subprocess.run(docker_cmd_run, capture_output=True, text=True, timeout=10)
-                    output = run_res.stdout
-                    if run_res.stderr:
-                        output += f"\n[ERROR]\n{run_res.stderr}"
-                    exit_code = run_res.returncode
+        # NATIVE EXECUTION
+        if req.language in ["c", "cpp"]:
+            compile_res = subprocess.run([cmd[0], temp_path, "-o", exe_path], capture_output=True, text=True, timeout=10)
+            if compile_res.returncode != 0:
+                output = f"Compilation Error:\n{compile_res.stderr}"
+                exit_code = compile_res.returncode
             else:
-                docker_cmd = ["docker", "run", "--rm", "-v", f"{file_dir}:/app", "-w", "/app", docker_image, cmd[0], file_name]
-                res = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=10)
-                output = res.stdout
-                if res.stderr:
-                    output += f"\n[ERROR]\n{res.stderr}"
-                exit_code = res.returncode
-                
-            output = "[Executed securely via Docker Sandbox]\n" + output
+                run_res = subprocess.run([exe_path], capture_output=True, text=True, timeout=10)
+                output = run_res.stdout
+                if run_res.stderr:
+                    output += f"\n[ERROR]\n{run_res.stderr}"
+                exit_code = run_res.returncode
         else:
-            # NATIVE FALLBACK EXECUTION
-            if req.language in ["c", "cpp"]:
-                compile_res = subprocess.run([cmd[0], temp_path, "-o", exe_path], capture_output=True, text=True, timeout=10)
-                if compile_res.returncode != 0:
-                    output = f"Compilation Error:\n{compile_res.stderr}"
-                    exit_code = compile_res.returncode
-                else:
-                    run_res = subprocess.run([exe_path], capture_output=True, text=True, timeout=10)
-                    output = run_res.stdout
-                    if run_res.stderr:
-                        output += f"\n[ERROR]\n{run_res.stderr}"
-                    exit_code = run_res.returncode
-            else:
-                res = subprocess.run([cmd[0], temp_path], capture_output=True, text=True, timeout=10)
-                output = res.stdout
-                if res.stderr:
-                    output += f"\n[ERROR]\n{res.stderr}"
-                exit_code = res.returncode
-            
-            output = "[WARNING: Executed locally. Install Docker for sandboxed security]\n" + output
+            res = subprocess.run([cmd[0], temp_path], capture_output=True, text=True, timeout=10)
+            output = res.stdout
+            if res.stderr:
+                output += f"\n[ERROR]\n{res.stderr}"
+            exit_code = res.returncode
+        
+        output = "[Executed locally]\n" + output
             
     except subprocess.TimeoutExpired:
         output += "\nTimeout expired. Infinite loop detected?"
@@ -123,7 +82,7 @@ def run_code(req: CodeRunReq, current_user: Optional[User] = Depends(get_current
             title="Executed Script", 
             activity_type="code", 
             subtitle=f"CodeLab {req.language.capitalize()} Snippet",
-            payload=json.dumps({"language": req.language, "code": req.code, "sandboxed": use_docker})
+            payload=json.dumps({"language": req.language, "code": req.code, "sandboxed": False})
         ))
         db.commit()
 
