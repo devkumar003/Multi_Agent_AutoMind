@@ -1,0 +1,268 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-white antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  /* Custom Interactive Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(165, 104, 255, 0.2);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(165, 104, 255, 0.6);
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-panel/40 backdrop-blur-xl border border-white/5 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.3)];
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 10px 40px rgba(0,0,0,0.4);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Futuristic Cyber-Light Theme Implementation */
+  .light-theme {
+    background-color: #f8fafc !important; /* Crisp Slate 50 */
+    color: #0f172a !important; /* Deep Slate 900 */
+  }
+
+  /* Override Arbitrary Backgrounds (Holographic Frost & Crisp White) */
+  .light-theme .bg-\[\#070913\] { background-color: #f1f5f9 !important; }
+  .light-theme .bg-\[\#0A0D1B\] { background-color: #ffffff !important; box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08) !important; }
+  .light-theme .bg-\[\#0F1223\] { background-color: #ffffff !important; box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05) !important; }
+  .light-theme .bg-\[\#131627\] { background-color: #f8fafc !important; }
+  
+  /* Missing Glassmorphism Overrides */
+  .light-theme .bg-\[\#0a0a0f\]\/80 { background-color: rgba(255, 255, 255, 0.85) !important; backdrop-filter: blur(20px); }
+  .light-theme .bg-black\/60 { background-color: rgba(255, 255, 255, 0.65) !important; backdrop-filter: blur(15px); }
+  .light-theme .bg-black\/40 { background-color: rgba(255, 255, 255, 0.8) !important; backdrop-filter: blur(16px); box-shadow: 0 8px 32px rgba(0,0,0,0.03); }
+  .light-theme .bg-black\/20 { background-color: rgba(255, 255, 255, 0.5) !important; backdrop-filter: blur(10px); }
+  
+  /* Override Arbitrary Borders (Soft Silver) */
+  .light-theme .border-\[\#1C1F33\] { border-color: #e2e8f0 !important; }
+  .light-theme .border-white\/5 { border-color: rgba(0, 0, 0, 0.04) !important; }
+  .light-theme .border-white\/10 { border-color: rgba(0, 0, 0, 0.08) !important; }
+  .light-theme .border-white\/20 { border-color: rgba(0, 0, 0, 0.12) !important; }
+  
+  /* Override Typography (Crisp Slate) */
+  .light-theme .text-white { color: #000000 !important; }
+  .light-theme .text-gray-200 { color: #1e293b !important; }
+  .light-theme .text-gray-300 { color: #334155 !important; }
+  .light-theme .text-gray-400 { color: #475569 !important; }
+  .light-theme .text-gray-500 { color: #64748b !important; }
+  
+  /* Override Background Opacities for buttons/hover states */
+  .light-theme .bg-white\/5 { background-color: rgba(0, 0, 0, 0.03) !important; }
+  .light-theme .bg-white\/10 { background-color: rgba(0, 0, 0, 0.06) !important; }
+  .light-theme .bg-white\/20 { background-color: rgba(0, 0, 0, 0.1) !important; }
+  .light-theme .hover\:bg-white\/5:hover { background-color: rgba(0, 0, 0, 0.05) !important; }
+  .light-theme .hover\:bg-white\/10:hover { background-color: rgba(0, 0, 0, 0.08) !important; }
+  .light-theme .hover\:bg-white\/20:hover { background-color: rgba(0, 0, 0, 0.15) !important; }
+
+  /* High-Tech Accents for Light Mode */
+  .light-theme .text-\[\#A568FF\] { color: #7c3aed !important; }
+  .light-theme .shadow-\[\#A568FF\]\/20 { box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.25) !important; }
+  .light-theme .shadow-purple-500\/20 { box-shadow: 0 10px 20px -5px rgba(147, 51, 234, 0.2) !important; }
+  .light-theme .shadow-\[0_0_15px_rgba\(165\,104\,255\,0\.1\)\] { box-shadow: 0 5px 20px rgba(0, 195, 255, 0.15) !important; }
+
+  /* Phase 2: Deep Styling & OS Visuals */
+  .bg-radial-fog {
+    background-color: #060816;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(0, 217, 255, 0.05), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.06), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(0, 255, 163, 0.03), transparent 50%);
+  }
+
+  /* Vibrant Holographic Air for Light Mode */
+  .light-theme .bg-radial-fog {
+    background-color: #f8fafc;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(0, 195, 255, 0.1), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(124, 58, 237, 0.08), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.05), transparent 50%);
+  }
+
+  .neural-grid-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+    animation: gridDrift 60s linear infinite;
+  }
+  
+  /* High-Tech Blueprint Grid */
+  .light-theme .neural-grid-bg {
+    background-image: 
+      linear-gradient(rgba(0, 100, 255, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 100, 255, 0.08) 1px, transparent 1px);
+  }
+  
+  @keyframes gridDrift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+  }
+
+  .neural-orb {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #A568FF, #8C4FFF, #4F93FF, #A568FF);
+    filter: blur(15px);
+    animation: rotateOrb 10s linear infinite, pulseOrb 4s ease-in-out infinite;
+    opacity: 0.6;
+  }
+
+  .light-theme .neural-orb {
+    opacity: 0.4;
+    filter: blur(15px);
+  }
+
+  .neural-orb::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    background: #0A0D1B;
+    border-radius: 50%;
+  }
+
+  .light-theme .neural-orb::after {
+    background: #ffffff;
+  }
+
+  @keyframes rotateOrb {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes pulseOrb {
+    0%, 100% { transform: scale(1); filter: blur(15px); }
+    50% { transform: scale(1.1); filter: blur(25px); opacity: 0.8; }
+  }
+
+  .quick-action-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(11, 16, 32, 0.4);
+    backdrop-filter: blur(12px);
+  }
+  
+  .quick-action-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 15px 30px -5px rgba(0,217,255,0.15);
+    border-color: rgba(0,217,255,0.3);
+  }
+
+  /* Phase 3: Data Lab Interactive UX */
+  .dropzone-glow {
+    position: relative;
+    border: 2px dashed rgba(0,217,255,0.4);
+    background: linear-gradient(180deg, rgba(0,217,255,0.05) 0%, rgba(6,8,22,1) 100%);
+    transition: all 0.3s ease;
+  }
+  .dropzone-glow:hover {
+    border-color: rgba(0,217,255,0.8);
+    box-shadow: 0 0 30px rgba(0,217,255,0.15) inset;
+  }
+
+  .neon-pulse {
+    animation: neonPulse 2s infinite alternate;
+  }
+  @keyframes neonPulse {
+    0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2), 0 0 10px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
+    100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.5), 0 0 20px rgba(16, 185, 129, 0.3); border-color: rgba(16, 185, 129, 0.8); }
+  }
+
+  .shimmer-bg {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .streaming-text::after {
+    content: '|';
+    animation: blink 1s step-end infinite;
+    color: #00D9FF;
+    margin-left: 2px;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* Phase 4: Ultra Futuristic Overlays */
+  .scanline {
+    width: 100%;
+    height: 100px;
+    z-index: 9999;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(139, 92, 246, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+    opacity: 0.1;
+    position: absolute;
+    bottom: 100%;
+    animation: scanline 6s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scanline {
+    0% { bottom: 100%; }
+    100% { bottom: -100px; }
+  }
+
+  .crt-flicker {
+    animation: crtflicker 0.15s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes crtflicker {
+    0% { opacity: 0.99; }
+    50% { opacity: 1; }
+    100% { opacity: 0.995; }
+  }
+}
+
+body::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(18, 16, 16, 0.1);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
