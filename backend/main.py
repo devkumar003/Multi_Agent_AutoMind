@@ -74,6 +74,37 @@ app.include_router(data_routes.router)
 
 from typing import Optional
 
+@app.post("/api/chat/upload")
+async def chat_upload_files(files: list[UploadFile] = File(...)):
+    uploaded = []
+    for f in files:
+        content = await f.read()
+        try:
+            text = content.decode("utf-8")
+        except UnicodeDecodeError:
+            text = "[Binary or unsupported file]"
+        
+        # limit preview length
+        preview = text[:2000] + ("..." if len(text) > 2000 else "")
+        uploaded.append({"filename": f.filename, "preview": preview})
+    return {"status": "ok", "files": uploaded}
+
+@app.post("/solve")
+async def solve_problem(req: ProblemRequest):
+    try:
+        res = await orchestrator.run_pipeline(
+            problem=req.problem,
+            state_mode=req.mode,
+            history=req.history,
+            ws_callback=broadcast_status,
+            file_context=req.file_context
+        )
+        return {"status": "success", "data": res}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Challenges
 @app.post("/api/challenges/generate")
 async def generate_challenge(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
