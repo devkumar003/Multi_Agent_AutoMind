@@ -39,7 +39,7 @@ export default function AdminContestForm() {
 
     const fetchContestChallenges = async () => {
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/api/admin/contests/${form.id}/challenges`, {
+            const res = await axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/contests/${form.id}/challenges`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setContestChallenges(res.data);
@@ -48,7 +48,7 @@ export default function AdminContestForm() {
 
     const fetchAllChallenges = async () => {
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/api/admin/challenges`, {
+            const res = await axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setAllChallenges(res.data);
@@ -64,9 +64,9 @@ export default function AdminContestForm() {
             };
             
             if (mode === 'create') {
-                await axios.post("http://127.0.0.1:8000/api/admin/contests", payload, { headers: { Authorization: `Bearer ${token}` }});
+                await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/contests`, payload, { headers: { Authorization: `Bearer ${token}` }});
             } else {
-                await axios.put(`http://127.0.0.1:8000/api/admin/contests/${form.id}`, payload, { headers: { Authorization: `Bearer ${token}` }});
+                await axios.put(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/contests/${form.id}`, payload, { headers: { Authorization: `Bearer ${token}` }});
             }
             setActivePage('admin-contests');
         } catch (e) {
@@ -77,7 +77,7 @@ export default function AdminContestForm() {
     const handleAddChallenge = async () => {
         if (!selectedChallenge) return;
         try {
-            await axios.post(`http://127.0.0.1:8000/api/admin/contests/${form.id}/challenges`, { challenge_id: selectedChallenge }, { headers: { Authorization: `Bearer ${token}` }});
+            await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/contests/${form.id}/challenges`, { challenge_id: selectedChallenge }, { headers: { Authorization: `Bearer ${token}` }});
             setSelectedChallenge('');
             fetchContestChallenges();
         } catch (e) { console.error(e); }
@@ -85,7 +85,7 @@ export default function AdminContestForm() {
 
     const handleRemoveChallenge = async (challengeId) => {
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/admin/contests/${form.id}/challenges/${challengeId}`, { headers: { Authorization: `Bearer ${token}` }});
+            await axios.delete(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/contests/${form.id}/challenges/${challengeId}`, { headers: { Authorization: `Bearer ${token}` }});
             fetchContestChallenges();
         } catch (e) { console.error(e); }
     };

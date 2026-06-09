@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LayoutDashboard, Database, MessageSquare, Code, Trophy, Clock, Settings as SettingsIcon, Bell, Sun, Moon, LogOut, Terminal, Activity, Zap, User, Users, Lock, AlertTriangle, Award, Swords, Shield } from 'lucide-react';
 import useAgentStore from '../store/useAgentStore';
-import useAuthStore from '../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import { useAuth, useUser, UserButton, SignInButton } from '@clerk/clerk-react';
 
 const CommandPalette = ({ isOpen, onClose, setActivePage }) => {
     if (!isOpen) return null;
@@ -46,27 +46,60 @@ const CommandPalette = ({ isOpen, onClose, setActivePage }) => {
 
 const Layout = ({ children }) => {
     const { activePage, setActivePage, logs } = useAgentStore();
-    const { user, logout } = useAuthStore();
     const navigate = useNavigate();
+    const { isSignedIn } = useAuth();
+    const { user } = useUser();
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [showNotif, setShowNotif] = useState(false);
-    const [showProfile, setShowProfile] = useState(false);
     const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [aiStatus, setAiStatus] = useState({ status: 'connected', model: 'Qwen', latency: 12 });
+    const [localStatus, setLocalStatus] = useState('checking');
+    const [cloudStatus, setCloudStatus] = useState('checking');
+    const [isAdmin, setIsAdmin] = useState(false);
+    const { getToken } = useAuth();
 
-    const handleLogout = () => {
-        logout();
-        navigate('/auth');
-    };
+    // Fetch user profile to check admin status
+    useEffect(() => {
+        if (isSignedIn && user) {
+            getToken().then(token => {
+                fetch(`${import.meta.env.VITE_CLOUD_API_URL}/api/user/profile`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'X-User-Email': user.primaryEmailAddress?.emailAddress || '',
+                        'X-User-Name': user.username || user.firstName || 'User'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.user && data.user.is_admin > 0) {
+                        setIsAdmin(true);
+                    }
+                })
+                .catch(console.error);
+            });
+        } else {
+            setIsAdmin(false);
+        }
+    }, [isSignedIn, getToken, user]);
 
-    // Poll AI Status
+    // Poll AI Status & Backend Health
     useEffect(() => {
         const fetchHealth = () => {
-            fetch("http://127.0.0.1:8000/api/system/health")
+            fetch(`${import.meta.env.VITE_LOCAL_API_URL}/api/system/health`)
                 .then(res => res.json())
                 .then(data => setAiStatus(data))
                 .catch(() => setAiStatus({ status: 'disconnected', model: 'Offline', latency: 0 }));
+
+            fetch(`${import.meta.env.VITE_LOCAL_API_URL}/health`)
+                .then(res => res.json())
+                .then(() => setLocalStatus('online'))
+                .catch(() => setLocalStatus('offline'));
+
+            fetch(`${import.meta.env.VITE_CLOUD_API_URL}/health`)
+                .then(res => res.json())
+                .then(() => setCloudStatus('online'))
+                .catch(() => setCloudStatus('offline'));
         };
         fetchHealth();
         const interval = setInterval(fetchHealth, 10000);
@@ -95,37 +128,32 @@ const Layout = ({ children }) => {
     }, [isDarkMode]);
 
     const notifRef = useRef(null);
-    const profileRef = useRef(null);
 
     // Close dropdowns on outside click
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (notifRef.current && !notifRef.current.contains(event.target)) setShowNotif(false);
-            if (profileRef.current && !profileRef.current.contains(event.target)) setShowProfile(false);
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-    const { isAuthenticated } = useAuthStore();
 
     const topNavMenu = [
         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, locked: false },
-        { id: 'data-lab', label: 'Data Lab', icon: Database, locked: !isAuthenticated },
+        { id: 'data-lab', label: 'Data Lab', icon: Database, locked: false },
         { id: 'chat', label: 'AI Chat', icon: MessageSquare, locked: false },
         { id: 'code-lab', label: 'Code Lab', icon: Code, locked: false },
-        { id: 'daily-challenge', label: 'Daily Challenge', icon: Trophy, locked: !isAuthenticated },
-        { id: 'contest-list', label: 'Global Contests', icon: Swords, locked: false },
-        { id: 'leaderboard', label: 'Leaderboard', icon: Award, locked: false },
+        { id: 'daily-challenge', label: 'Daily Challenge', icon: Trophy, locked: !isSignedIn },
+        { id: 'contest-list', label: 'Global Contests', icon: Swords, locked: !isSignedIn },
+        { id: 'leaderboard', label: 'Leaderboard', icon: Award, locked: !isSignedIn },
     ];
 
     const bottomNavMenu = [
-        { id: 'history', label: 'History', icon: Clock, locked: !isAuthenticated },
-        { id: 'settings', label: 'Settings', icon: SettingsIcon, locked: !isAuthenticated },
+        { id: 'history', label: 'History', icon: Clock, locked: false },
+        { id: 'settings', label: 'Settings', icon: SettingsIcon, locked: false },
     ];
-
-    const userInitials = user?.username ? user.username.substring(0, 2).toUpperCase() : 'AI';
 
     const handleNavClick = (item) => {
         if (item.locked) {
@@ -177,7 +205,7 @@ const Layout = ({ children }) => {
                         ))}
                     </ul>
 
-                    {user?.is_admin >= 1 && (
+                    {isSignedIn && isAdmin && (
                         <>
                             {isSidebarOpen ? (
                                 <div className="mt-8 mb-4 px-4 text-[10px] font-black text-red-500 tracking-[0.2em] flex items-center gap-2 whitespace-nowrap overflow-hidden">
@@ -190,10 +218,10 @@ const Layout = ({ children }) => {
                             )}
                             <ul className="space-y-1.5">
                                 {[
-                                    { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Shield, locked: false },
-                                    { id: 'admin-users', label: 'Manage Users', icon: Users, locked: false },
-                                    { id: 'admin-challenges', label: 'Manage Challenges', icon: Code, locked: false },
-                                    { id: 'admin-contests', label: 'Manage Contests', icon: Swords, locked: false },
+                                    { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Shield, locked: !isSignedIn },
+                                    { id: 'admin-users', label: 'Manage Users', icon: Users, locked: !isSignedIn },
+                                    { id: 'admin-challenges', label: 'Manage Challenges', icon: Code, locked: !isSignedIn },
+                                    { id: 'admin-contests', label: 'Manage Contests', icon: Swords, locked: !isSignedIn },
                                 ].map((item) => (
                                     <li key={item.id}>
                                         <button
@@ -259,13 +287,27 @@ const Layout = ({ children }) => {
 
                 <div className="p-4 border-t border-border-light">
                     <button className={`flex items-center w-full p-3 hover:bg-panel rounded-xl transition-all border border-transparent hover:border-border-medium ${isSidebarOpen ? 'gap-3' : 'justify-center'}`}>
-                        <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-tr from-accent-secondary to-accent-primary flex items-center justify-center text-text-primary text-sm font-bold shadow-[0_0_15px_rgba(165,104,255,0.4)] uppercase border border-border-medium">
-                            {userInitials}
-                        </div>
+                        {isSignedIn ? (
+                            <div className="w-9 h-9 shrink-0 flex items-center justify-center">
+                                <UserButton afterSignOutUrl="/" appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }} />
+                            </div>
+                        ) : (
+                            <div className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-tr from-accent-secondary to-accent-primary flex items-center justify-center text-text-primary text-sm font-bold shadow-[0_0_15px_rgba(165,104,255,0.4)] uppercase border border-border-medium">
+                                AI
+                            </div>
+                        )}
                         {isSidebarOpen && (
-                            <div className="flex flex-col text-left overflow-hidden">
-                                <span className="text-sm font-bold text-text-primary truncate max-w-[100px]">{user?.username || 'Pilot'}</span>
-                                <span className="text-xs text-accent-primary font-medium whitespace-nowrap">Standard Plan</span>
+                            <div className="flex flex-col text-left overflow-hidden w-full">
+                                {isSignedIn ? (
+                                    <>
+                                        <span className="text-sm font-bold text-text-primary truncate max-w-[100px]">{user?.firstName || user?.username || 'Pilot'}</span>
+                                        <span className="text-xs text-accent-primary font-medium whitespace-nowrap">Standard Plan</span>
+                                    </>
+                                ) : (
+                                    <SignInButton mode="modal">
+                                        <span className="text-sm font-bold text-text-primary truncate cursor-pointer hover:underline">Sign In</span>
+                                    </SignInButton>
+                                )}
                             </div>
                         )}
                     </button>
@@ -292,12 +334,14 @@ const Layout = ({ children }) => {
                             </span>
                         </div>
                         <div className="flex items-center gap-2 border-r border-border-medium pr-4">
-                            <span className="text-xs font-medium text-text-muted">Model:</span>
-                            <span className={`text-xs font-bold ${aiStatus.status === 'connected' ? 'text-accent-secondary' : 'text-text-muted'}`}>{aiStatus.model}</span>
+                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-sm border ${localStatus === 'online' ? 'bg-accent-success/10 text-accent-success border-accent-success/30' : 'bg-accent-danger/10 text-accent-danger border-accent-danger/30'}`}>
+                                {localStatus === 'online' ? '🟢 Offline AI Available' : '🔴 Offline AI Offline'}
+                            </span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-text-muted">Latency:</span>
-                            <span className={`text-xs font-bold ${aiStatus.status === 'connected' ? 'text-accent-success' : 'text-accent-danger'}`}>{aiStatus.latency}ms</span>
+                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-sm border ${cloudStatus === 'online' ? 'bg-accent-success/10 text-accent-success border-accent-success/30' : 'bg-accent-danger/10 text-accent-danger border-accent-danger/30'}`}>
+                                {cloudStatus === 'online' ? '🟢 Cloud Service Active' : '🔴 Cloud Service Offline'}
+                            </span>
                         </div>
                         <div className="ml-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <span className="text-[10px] bg-panel-hover px-1.5 py-0.5 rounded text-text-primary border border-border-medium">Ctrl</span>
@@ -316,7 +360,7 @@ const Layout = ({ children }) => {
                         {/* Notifications */}
                         <div className="relative" ref={notifRef}>
                             <button 
-                                onClick={() => {setShowNotif(!showNotif); setShowProfile(false);}}
+                                onClick={() => {setShowNotif(!showNotif);}}
                                 className={`hover:text-text-primary transition p-2 rounded-full border ${showNotif ? 'bg-panel-hover text-text-primary border-border-medium shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'border-transparent hover:bg-panel hover:border-border-light'}`}
                             >
                                 <Bell size={18} />
@@ -349,45 +393,16 @@ const Layout = ({ children }) => {
                             )}
                         </div>
 
-                        {/* Profile */}
-                        <div className="relative" ref={profileRef}>
-                            <div 
-                                onClick={() => {setShowProfile(!showProfile); setShowNotif(false);}}
-                                className={`w-9 h-9 rounded-full bg-gradient-to-tr from-accent-secondary to-accent-primary ml-2 shadow-[0_0_15px_rgba(165,104,255,0.3)] cursor-pointer flex items-center justify-center text-text-primary text-sm font-bold border-2 transition-all uppercase hover:scale-105 ${showProfile ? 'border-text-primary' : 'border-border-light'}`}
-                            >
-                                {userInitials}
-                            </div>
-                            
-                            {/* Profile Dropdown */}
-                            {showProfile && (
-                                <div className="absolute right-0 mt-3 w-56 glass-panel overflow-hidden z-50 animate-in fade-in slide-in-from-top-4 duration-200">
-                                    <div className="p-4 border-b border-border-light bg-panel">
-                                        <p className="text-sm font-bold text-text-primary truncate">{user?.username || 'Pilot'}</p>
-                                        <p className="text-xs text-text-muted mt-0.5 truncate">{user?.email || 'standard@protocol.ai'}</p>
-                                        <div className="mt-2 inline-block px-2 py-1 bg-gradient-to-r from-accent-secondary/20 to-accent-primary/20 border border-border-light rounded-md text-[10px] font-bold text-text-primary uppercase tracking-widest shadow-inner">
-                                            Active Identity
-                                        </div>
-                                    </div>
-                                    <div className="p-2 space-y-1">
-                                        <button onClick={() => {setActivePage('profile'); setShowProfile(false);}} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-panel-hover rounded-xl transition-all border border-transparent hover:border-border-light">
-                                            <User size={16} className="text-accent-secondary" /> Neural Profile
-                                        </button>
-                                        <button onClick={() => {setActivePage('settings'); setShowProfile(false);}} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-panel-hover rounded-xl transition-all border border-transparent hover:border-border-light">
-
-                                            <SettingsIcon size={16} className="text-text-muted" /> Settings
-                                        </button>
-                                        <button onClick={() => {setActivePage('history'); setShowProfile(false);}} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-panel-hover rounded-xl transition-all border border-transparent hover:border-border-light">
-                                            <Clock size={16} className="text-accent-warning" /> Activity History
-                                        </button>
-                                        <div className="h-px bg-border-light my-2"></div>
-                                        <button 
-                                            onClick={handleLogout}
-                                            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-accent-danger hover:bg-accent-danger/20 hover:text-red-300 rounded-xl transition-all border border-transparent hover:border-accent-danger/20"
-                                        >
-                                            <LogOut size={16} /> Sign Out
-                                        </button>
-                                    </div>
-                                </div>
+                        {/* Profile - UserButton */}
+                        <div className="relative ml-2 flex items-center justify-center">
+                            {isSignedIn ? (
+                                <UserButton afterSignOutUrl="/" appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }} />
+                            ) : (
+                                <SignInButton mode="modal">
+                                    <button className="w-9 h-9 rounded-full bg-gradient-to-tr from-accent-secondary to-accent-primary shadow-[0_0_15px_rgba(165,104,255,0.3)] flex items-center justify-center text-text-primary text-sm font-bold border-2 transition-all uppercase hover:scale-105 border-border-light">
+                                        AI
+                                    </button>
+                                </SignInButton>
                             )}
                         </div>
                     </div>
@@ -425,12 +440,14 @@ const Layout = ({ children }) => {
                                 >
                                     Cancel
                                 </button>
-                                <button 
-                                    onClick={() => window.location.href = '/auth'}
-                                    className="flex-1 py-3 px-4 bg-gradient-to-r from-accent-secondary to-accent-primary hover:shadow-[0_0_20px_rgba(165,104,255,0.4)] hover:scale-105 text-white rounded-xl transition-all text-sm font-bold uppercase tracking-wider"
-                                >
-                                    Establish Link
-                                </button>
+                                <SignInButton mode="modal">
+                                    <button 
+                                        onClick={() => setShowUpgradeModal(false)}
+                                        className="flex-1 py-3 px-4 bg-gradient-to-r from-accent-secondary to-accent-primary hover:shadow-[0_0_20px_rgba(165,104,255,0.4)] hover:scale-105 text-white rounded-xl transition-all text-sm font-bold uppercase tracking-wider"
+                                    >
+                                        Establish Link
+                                    </button>
+                                </SignInButton>
                             </div>
                         </div>
                     </div>

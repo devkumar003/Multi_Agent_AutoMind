@@ -44,13 +44,7 @@ const AIChat = () => {
   const handleSubmit = async (files = []) => {
     if (!problem.trim() && files.length === 0) return;
 
-    if (!isAuthenticated) {
-      if (guestUsageCount >= 5) {
-        setShowLimitModal(true);
-        return;
-      }
-      incrementGuestUsage();
-    }
+
 
     const userPrompt = problem;
     const currentMode = chatMode;
@@ -75,7 +69,7 @@ const AIChat = () => {
         const formData = new FormData();
         files.forEach(f => formData.append('files', f));
         
-        const uploadRes = await axios.post('http://127.0.0.1:8000/api/chat/upload', formData);
+        const uploadRes = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/chat/upload`, formData);
         if (uploadRes.data.status === 'ok') {
           fileContext = uploadRes.data.files.map(f => 
             `--- FILE: ${f.filename} ---\n${f.preview}\n--- END FILE ---`
@@ -91,7 +85,7 @@ const AIChat = () => {
           history: useMemory ? chatHistory : [],
           file_context: fileContext
       };
-      const res = await axios.post('http://127.0.0.1:8000/solve', payload);
+      const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/solve`, payload);
       if (res.data.status === 'success') {
         const resultData = res.data.data;
         setFinalResult(resultData);

@@ -47,13 +47,7 @@ const CodeLab = () => {
     }, [codeContext, codeLanguage, challengeId]);
 
     const handleRun = async () => {
-        if (!isAuthenticated) {
-            if (guestUsageCount >= 5) {
-                setShowLimitModal(true);
-                return;
-            }
-            incrementGuestUsage();
-        }
+
 
         setIsRunning(true);
         setBottomTab('console');
@@ -62,7 +56,7 @@ const CodeLab = () => {
         try {
             const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
             if (challengeId) {
-                const res = await axios.post("http://127.0.0.1:8000/api/challenge/submit", {
+                const res = await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/challenge/submit`, {
                     challenge_id: activeChallenge.id,
                     code: code
                 }, { headers: { Authorization: `Bearer ${token}` }});
@@ -74,7 +68,7 @@ const CodeLab = () => {
                 }
                 setSubmitStatus(res.data.passed ? 'success' : 'failed');
             } else {
-                const res = await axios.post("http://127.0.0.1:8000/api/code/run", { code: code, language: language }, config);
+                const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/code/run`, { code: code, language: language }, config);
                 setOutput(res.data.output || "Process finished gracefully with code " + res.data.exit_code);
                 setSubmitStatus(res.data.exit_code !== 0 ? 'failed' : 'success');
             }
@@ -90,7 +84,7 @@ const CodeLab = () => {
         setOutput("AI Agent is analyzing the stack trace and writing a fix...");
         try {
             const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-            const res = await axios.post("http://127.0.0.1:8000/api/code/fix", {
+            const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/code/fix`, {
                 code: code,
                 error_output: output,
                 language: language

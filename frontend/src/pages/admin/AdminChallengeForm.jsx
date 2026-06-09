@@ -31,7 +31,7 @@ export default function AdminChallengeForm() {
 
     useEffect(() => {
         if (mode === 'edit' && form.id) {
-            axios.get(`http://127.0.0.1:8000/api/admin/challenges/${form.id}/testcases`, {
+            axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${form.id}/testcases`, {
                 headers: { Authorization: `Bearer ${token}` }
             }).then(res => setTestCases(res.data)).catch(console.error);
         }
@@ -40,9 +40,9 @@ export default function AdminChallengeForm() {
     const handleSave = async () => {
         try {
             if (mode === 'create') {
-                await axios.post("http://127.0.0.1:8000/api/admin/challenges", form, { headers: { Authorization: `Bearer ${token}` }});
+                await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges`, form, { headers: { Authorization: `Bearer ${token}` }});
             } else {
-                await axios.put(`http://127.0.0.1:8000/api/admin/challenges/${form.id}`, form, { headers: { Authorization: `Bearer ${token}` }});
+                await axios.put(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${form.id}`, form, { headers: { Authorization: `Bearer ${token}` }});
             }
             setActivePage('admin-challenges');
         } catch (e) {
@@ -57,14 +57,14 @@ export default function AdminChallengeForm() {
         }
         setIsGenerating(true);
         try {
-            const res = await axios.post(`http://127.0.0.1:8000/api/admin/challenges/${form.id}/testcases/generate`, {}, { headers: { Authorization: `Bearer ${token}` }});
+            const res = await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${form.id}/testcases/generate`, {}, { headers: { Authorization: `Bearer ${token}` }});
             if (res.data.success) {
                 // Bulk add generated test cases
                 for (const tc of res.data.preview_cases) {
-                    await axios.post(`http://127.0.0.1:8000/api/admin/challenges/${form.id}/testcases`, tc, { headers: { Authorization: `Bearer ${token}` }});
+                    await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${form.id}/testcases`, tc, { headers: { Authorization: `Bearer ${token}` }});
                 }
                 // Refresh test cases
-                const refresh = await axios.get(`http://127.0.0.1:8000/api/admin/challenges/${form.id}/testcases`, { headers: { Authorization: `Bearer ${token}` }});
+                const refresh = await axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${form.id}/testcases`, { headers: { Authorization: `Bearer ${token}` }});
                 setTestCases(refresh.data);
             }
         } catch (e) {
@@ -80,16 +80,16 @@ export default function AdminChallengeForm() {
         const expected_output = prompt("Enter expected output:");
         if (!expected_output) return;
         
-        await axios.post(`http://127.0.0.1:8000/api/admin/challenges/${form.id}/testcases`, {
+        await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${form.id}/testcases`, {
             input_data, expected_output, is_hidden: 0, weight: 10
         }, { headers: { Authorization: `Bearer ${token}` }});
         
-        const refresh = await axios.get(`http://127.0.0.1:8000/api/admin/challenges/${form.id}/testcases`, { headers: { Authorization: `Bearer ${token}` }});
+        const refresh = await axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${form.id}/testcases`, { headers: { Authorization: `Bearer ${token}` }});
         setTestCases(refresh.data);
     };
 
     const handleDeleteTC = async (tcId) => {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/testcases/${tcId}`, { headers: { Authorization: `Bearer ${token}` }});
+        await axios.delete(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/testcases/${tcId}`, { headers: { Authorization: `Bearer ${token}` }});
         setTestCases(testCases.filter(t => t.id !== tcId));
     };
 

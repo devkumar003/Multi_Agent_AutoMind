@@ -13,8 +13,8 @@ const Dashboard = () => {
 
     useEffect(() => {
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        axios.get("http://127.0.0.1:8000/api/user/stats", { headers }).then(res => setStats(res.data)).catch(console.error);
-        axios.get("http://127.0.0.1:8000/api/user/activity", { headers }).then(res => setActivity(res.data)).catch(console.error);
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/user/stats`, { headers }).then(res => setStats(res.data)).catch(console.error);
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/user/activity`, { headers }).then(res => setActivity(res.data)).catch(console.error);
     }, [token]);
 
     useEffect(() => {

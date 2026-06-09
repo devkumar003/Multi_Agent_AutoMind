@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
 import useAgentStore from './store/useAgentStore';
-import useAuthStore from './store/useAuthStore';
 import Layout from './components/Layout';
 import AIChat from './pages/AIChat';
 import Dashboard from './pages/Dashboard';
@@ -10,7 +10,6 @@ import CodeLab from './pages/CodeLab';
 import DailyChallenge from './pages/DailyChallenge';
 import Settings from './pages/Settings';
 import History from './pages/History';
-import Auth from './pages/Auth';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 
@@ -25,22 +24,16 @@ import ContestList from './pages/contest/ContestList';
 import ContestArena from './pages/contest/ContestArena';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthStore();
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full space-y-6 bg-[#0A0D1B]/40 rounded-3xl border border-white/5 m-8 p-12 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mb-4 border border-red-500/20">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <h2 className="text-2xl font-black text-white tracking-widest uppercase">Access Restricted</h2>
-        <p className="text-gray-400 max-w-md">This sector of the operating system requires a verified neural identity. Please authenticate to continue.</p>
-        <button onClick={() => window.location.href = '/auth'} className="mt-4 px-8 py-3 bg-gradient-to-r from-[#8B5CF6] to-[#00D9FF] text-white font-bold rounded-xl hover:shadow-[0_0_20px_rgba(139,92,246,0.4)] transition-all uppercase tracking-widest text-xs">
-          Establish Link
-        </button>
-      </div>
-    );
-  }
-  return children;
+  return (
+    <>
+      <SignedIn>
+        {children}
+      </SignedIn>
+      <SignedOut>
+        <RedirectToSignIn />
+      </SignedOut>
+    </>
+  );
 };
 
 function App() {
@@ -88,21 +81,22 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
         <Route path="/*" element={
           <Layout>
             {activePage === 'dashboard' && <Dashboard />}
             {activePage === 'chat' && <AIChat />}
             {activePage === 'code-lab' && <CodeLab />}
-            {activePage === 'data-lab' && <ProtectedRoute><DataLab /></ProtectedRoute>}
+            {activePage === 'data-lab' && <DataLab />}
+            
             {activePage === 'daily-challenge' && <ProtectedRoute><DailyChallenge /></ProtectedRoute>}
-            {activePage === 'leaderboard' && <Leaderboard />}
-            {activePage === 'settings' && <ProtectedRoute><Settings /></ProtectedRoute>}
-            {activePage === 'history' && <ProtectedRoute><History /></ProtectedRoute>}
+            {activePage === 'leaderboard' && <ProtectedRoute><Leaderboard /></ProtectedRoute>}
+            
+            {activePage === 'settings' && <Settings />}
+            {activePage === 'history' && <History />}
             {activePage === 'profile' && <ProtectedRoute><Profile /></ProtectedRoute>}
             
             {/* Contest Routes */}
-            {activePage === 'contest-list' && <ContestList />}
+            {activePage === 'contest-list' && <ProtectedRoute><ContestList /></ProtectedRoute>}
             {activePage === 'contest-arena' && <ProtectedRoute><ContestArena /></ProtectedRoute>}
 
             {/* Admin Routes */}

@@ -10,7 +10,7 @@ export default function AdminContests() {
     const [contests, setContests] = useState([]);
 
     const fetchContests = () => {
-        axios.get("http://127.0.0.1:8000/api/admin/contests", {
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/contests`, {
             headers: { Authorization: `Bearer ${token}` }
         }).then(res => setContests(res.data)).catch(console.error);
     };
@@ -32,7 +32,7 @@ export default function AdminContests() {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this contest?")) return;
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/admin/contests/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/contests/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchContests();

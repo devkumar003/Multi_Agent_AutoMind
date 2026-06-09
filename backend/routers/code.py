@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
-from db import get_db, User, ActivityHistory
+from db import get_db, ActivityHistory
 from auth import get_current_user_optional
 from llm import get_qwen
 import tempfile
@@ -18,7 +18,7 @@ class CodeRunReq(BaseModel):
     language: str = "python"
 
 @router.post("/run")
-def run_code(req: CodeRunReq, current_user: Optional[User] = Depends(get_current_user_optional), db: Session = Depends(get_db)):
+def run_code(req: CodeRunReq, current_user = Depends(get_current_user_optional), db: Session = Depends(get_db)):
     if req.language == "javascript":
         ext = ".js"
         cmd = ["node"]
@@ -94,7 +94,7 @@ class CodeFixReq(BaseModel):
     language: str
 
 @router.post("/fix")
-async def fix_code(req: CodeFixReq, current_user: Optional[User] = Depends(get_current_user_optional), db: Session = Depends(get_db)):
+async def fix_code(req: CodeFixReq, current_user = Depends(get_current_user_optional), db: Session = Depends(get_db)):
     prompt = f"""You are an expert {req.language} debugger.
 
 The user wrote the following code:

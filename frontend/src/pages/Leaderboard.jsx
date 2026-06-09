@@ -11,7 +11,7 @@ const Leaderboard = () => {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/api/leaderboard");
+                const res = await axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/leaderboard`);
                 setLeaderboard(res.data.leaderboard);
             } catch (err) {
                 setError("Failed to load leaderboard. Server might be offline.");

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, UploadFile, File
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from db import get_db, User, ActivityHistory
+from db import get_db, ActivityHistory
 from auth import get_current_user
 from llm import get_qwen
 import os
@@ -24,7 +24,7 @@ class DataQueryReq(BaseModel):
     query: str
 
 @router.post("/upload")
-async def upload_data(file: UploadFile = File(...), current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def upload_data(file: UploadFile = File(...), current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     contents = await file.read()
     
     file_id = str(uuid.uuid4())
@@ -79,7 +79,7 @@ async def export_data(file_id: str):
     return FileResponse(path=file_path, filename="autothink_dataset.csv", media_type="text/csv")
 
 @router.post("/clean")
-async def clean_data(req: DataCleanReq, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def clean_data(req: DataCleanReq, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     file_path = os.path.join("uploads", f"{req.file_id}.csv")
     if not os.path.exists(file_path):
         return {"error": "Dataset missing on server."}
@@ -247,7 +247,7 @@ async def clean_data(req: DataCleanReq, current_user: User = Depends(get_current
 
 
 @router.post("/query")
-async def query_data(req: DataQueryReq, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def query_data(req: DataQueryReq, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         file_path = os.path.join("uploads", f"{req.file_id}.csv")
         file_path_unix = file_path.replace("\\", "/")
@@ -300,7 +300,7 @@ async def query_data(req: DataQueryReq, current_user: User = Depends(get_current
 
 
 @router.post("/visualize")
-async def visualize_data(req: DataQueryReq, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def visualize_data(req: DataQueryReq, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         file_path = os.path.join("uploads", f"{req.file_id}.csv")
         if not os.path.exists(file_path):

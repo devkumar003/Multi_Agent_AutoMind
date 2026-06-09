@@ -4,6 +4,23 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, ScatterChart, Scatter, X
 import axios from 'axios';
 import useAuthStore from '../store/useAuthStore';
 
+const renderMarkdown = (text) => {
+    if (!text) return null;
+    return text.split('\n').map((line, idx) => {
+        const parts = line.split(/(\*\*.*?\*\*)/g);
+        return (
+            <div key={idx} className="mb-1 leading-relaxed">
+                {parts.map((part, i) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={i} className="font-bold text-accent-secondary">{part.slice(2, -2)}</strong>;
+                    }
+                    return <span key={i}>{part}</span>;
+                })}
+            </div>
+        );
+    });
+};
+
 const DataLab = () => {
     const { token } = useAuthStore();
     const [columns, setColumns] = useState([]);
@@ -52,7 +69,7 @@ const DataLab = () => {
 
         try {
             const headers = token ? { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } : {};
-            const res = await axios.post("http://127.0.0.1:8000/api/data/upload", formData, { headers });
+            const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/data/upload`, formData, { headers });
             if(res.data.error) {
                 alert(res.data.error);
             } else {
@@ -76,7 +93,7 @@ const DataLab = () => {
         setIsCleaning(true);
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            const res = await axios.post("http://127.0.0.1:8000/api/data/clean", { file_id: fileId }, { headers });
+            const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/data/clean`, { file_id: fileId }, { headers });
             if(res.data.error) {
                 alert(res.data.error);
             } else {
@@ -99,7 +116,7 @@ const DataLab = () => {
             alert("Please upload a CSV file first.");
             return;
         }
-        window.open(`http://127.0.0.1:8000/api/data/export/${fileId}`, '_blank');
+        window.open(`${import.meta.env.VITE_LOCAL_API_URL}/api/data/export/${fileId}`, '_blank');
     };
 
     const handleVisualize = async (queryText = query) => {
@@ -109,7 +126,7 @@ const DataLab = () => {
         setQueryResult(null);
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            const res = await axios.post("http://127.0.0.1:8000/api/data/visualize", { file_id: fileId, query: queryText }, { headers });
+            const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/data/visualize`, { file_id: fileId, query: queryText }, { headers });
             if (res.data.error) {
                 setQueryResult(`Backend Error: ${res.data.error}`);
             } else {
@@ -146,7 +163,7 @@ const DataLab = () => {
                                                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-medium)" />
                                                 <XAxis dataKey={spec.x} stroke="var(--text-muted)" tick={{fontSize: 11}} />
                                                 <YAxis stroke="var(--text-muted)" tick={{fontSize: 11}} />
-                                                <Tooltip contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Tooltip contentStyle={{ backgroundColor: '#0a0a0f', borderColor: 'rgba(255,255,255,0.1)', color: '#ffffff', borderRadius: '8px' }} itemStyle={{ color: '#ffffff' }} />
                                                 <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
                                                 <Bar dataKey={spec.y} fill="var(--accent-secondary)" radius={[4, 4, 0, 0]} />
                                             </BarChart>
@@ -156,14 +173,14 @@ const DataLab = () => {
                                                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-medium)" />
                                                 <XAxis dataKey={spec.x} stroke="var(--text-muted)" tick={{fontSize: 11}} />
                                                 <YAxis stroke="var(--text-muted)" tick={{fontSize: 11}} />
-                                                <Tooltip contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Tooltip contentStyle={{ backgroundColor: '#0a0a0f', borderColor: 'rgba(255,255,255,0.1)', color: '#ffffff', borderRadius: '8px' }} itemStyle={{ color: '#ffffff' }} />
                                                 <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
                                                 <Line type="monotone" dataKey={spec.y} stroke="var(--accent-primary)" strokeWidth={3} dot={{ fill: 'var(--accent-primary)', r: 3 }} activeDot={{ r: 5 }} />
                                             </LineChart>
                                         );
                                         if (type === 'pie') return (
                                             <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                                                <Tooltip contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Tooltip contentStyle={{ backgroundColor: '#0a0a0f', borderColor: 'rgba(255,255,255,0.1)', color: '#ffffff', borderRadius: '8px' }} itemStyle={{ color: '#ffffff' }} />
                                                 <Pie data={cData} dataKey={spec.y} nameKey={spec.x} cx="50%" cy="50%" outerRadius={110} fill="var(--accent-success)" label={{fontSize: 11, fill: 'var(--text-muted)'}} />
                                             </PieChart>
                                         );
@@ -172,7 +189,7 @@ const DataLab = () => {
                                                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border-medium)" />
                                                 <XAxis dataKey={spec.x} type="category" name={spec.x} stroke="var(--text-muted)" tick={{fontSize: 11}} />
                                                 <YAxis dataKey={spec.y} type="number" name={spec.y} stroke="var(--text-muted)" tick={{fontSize: 11}} />
-                                                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: 'var(--panel)', borderColor: 'var(--border-light)', color: 'var(--text-primary)', borderRadius: '8px' }} />
+                                                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: '#0a0a0f', borderColor: 'rgba(255,255,255,0.1)', color: '#ffffff', borderRadius: '8px' }} itemStyle={{ color: '#ffffff' }} />
                                                 <Scatter name={spec.title} data={cData} fill="var(--accent-warning)" />
                                             </ScatterChart>
                                         );
@@ -268,7 +285,7 @@ const DataLab = () => {
                                 ], async () => {
                                     try {
                                         const headers = token ? { Authorization: `Bearer ${token}` } : {};
-                                        const res = await axios.post("http://127.0.0.1:8000/api/data/query", { file_id: fileId, query: query }, { headers });
+                                        const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/data/query`, { file_id: fileId, query: query }, { headers });
                                         const endT = Date.now();
                                         setProcessingTime(((endT - startT) / 1000).toFixed(1));
                                         setConfidence((Math.random() * (99 - 92) + 92).toFixed(1)); // Mock confidence
@@ -291,7 +308,7 @@ const DataLab = () => {
                             }
                         }}
                         placeholder={fileId ? "Ask Qwen2.5 to analyze your data (e.g. 'average salary', 'salary by month'...)" : "Upload a CSV/Excel file first to unlock Qwen2.5 data querying..."} 
-                        className={`w-full bg-bg-base border border-border-light rounded-xl py-4 pl-5 pr-32 text-sm text-text-primary transition-colors shadow-inner focus:outline-none focus:border-accent-secondary ${!fileId ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                        className={`w-full bg-[#0a0a0f] focus:bg-[#12121a] border border-white/10 rounded-xl py-4 pl-5 pr-32 text-sm text-white placeholder-gray-500 transition-colors shadow-inner focus:outline-none focus:border-accent-secondary ${!fileId ? 'opacity-50 cursor-not-allowed' : ''}`} 
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                         {isQuerying || isVisualizing ? (
@@ -348,8 +365,8 @@ const DataLab = () => {
                     <div className="flex items-center gap-2 text-accent-secondary font-bold text-sm mb-3 px-2 tracking-wide uppercase">
                         <Wand2 size={16} /> Data Cleaning Audit Log
                     </div>
-                    <div className="p-4 bg-bg-base border border-border-light rounded-xl">
-                        <pre className="text-sm font-mono text-accent-success whitespace-pre-wrap leading-relaxed">{cleanSummary}</pre>
+                    <div className="p-4 bg-bg-base border border-border-light rounded-xl font-mono text-sm text-accent-success">
+                        {renderMarkdown(cleanSummary)}
                     </div>
                 </div>
             )}

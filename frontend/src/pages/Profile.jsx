@@ -11,7 +11,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/user/profile', {
+        const response = await fetch(`${import.meta.env.VITE_CLOUD_API_URL}/api/user/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

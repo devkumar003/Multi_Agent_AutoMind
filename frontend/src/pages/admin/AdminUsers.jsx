@@ -4,21 +4,36 @@ import useAuthStore from '../../store/useAuthStore';
 import { Users, Shield, ShieldOff, Mail } from 'lucide-react';
 
 export default function AdminUsers() {
-    const { token, user: currentUser } = useAuthStore();
+    const { token, user: clerkUser } = useAuthStore();
     const [users, setUsers] = useState([]);
+    const [dbUser, setDbUser] = useState(null);
 
-    const fetchUsers = () => {
-        axios.get("http://127.0.0.1:8000/api/admin/users", {
-            headers: { Authorization: `Bearer ${token}` }
-        }).then(res => setUsers(res.data)).catch(console.error);
+    const fetchUsersAndProfile = async () => {
+        try {
+            // Fetch profile
+            const profileRes = await axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/user/profile`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (profileRes.data && profileRes.data.user) {
+                setDbUser(profileRes.data.user);
+            }
+
+            // Fetch users
+            const res = await axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/users`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUsers(res.data);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     useEffect(() => {
-        if (token) fetchUsers();
+        if (token) fetchUsersAndProfile();
     }, [token]);
 
     const handleToggleAdmin = async (u) => {
-        if (u.id === currentUser?.id) {
+        if (u.clerk_id === clerkUser?.id) {
             alert("You cannot modify your own admin privileges.");
             return;
         }
@@ -28,10 +43,10 @@ export default function AdminUsers() {
         if (!window.confirm(confirmMsg)) return;
 
         try {
-            await axios.put(`http://127.0.0.1:8000/api/admin/users/${u.id}/role`, {
+            await axios.put(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/users/${u.id}/role`, {
                 is_admin: newStatus
             }, { headers: { Authorization: `Bearer ${token}` }});
-            fetchUsers();
+            fetchUsersAndProfile();
         } catch (e) {
             alert(e.response?.data?.detail || "An error occurred");
         }
@@ -66,7 +81,7 @@ export default function AdminUsers() {
                         {users.map(u => (
                             <tr key={u.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                 <td className="p-4 text-gray-500 font-mono">#{u.id}</td>
-                                <td className="p-4 font-bold">{u.username} {u.id === currentUser?.id && <span className="ml-2 text-xs text-gray-500 bg-white/10 px-2 py-1 rounded">(You)</span>}</td>
+                                <td className="p-4 font-bold">{u.username} {u.clerk_id === clerkUser?.id && <span className="ml-2 text-xs text-gray-500 bg-white/10 px-2 py-1 rounded">(You)</span>}</td>
                                 <td className="p-4 text-gray-400 flex items-center gap-2"><Mail className="w-4 h-4" /> {u.email}</td>
                                 <td className="p-4">
                                     {u.is_admin === 2 ? (
@@ -84,7 +99,7 @@ export default function AdminUsers() {
                                     )}
                                 </td>
                                 <td className="p-4 text-right">
-                                    {u.id !== currentUser?.id && currentUser?.is_admin === 2 && (
+                                    {u.clerk_id !== clerkUser?.id && dbUser?.is_admin === 2 && (
                                         <button 
                                             onClick={() => handleToggleAdmin(u)} 
                                             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${u.is_admin ? 'bg-gray-500/10 hover:bg-red-500/20 text-gray-400 hover:text-red-400 border-transparent hover:border-red-500/30' : 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/20 hover:border-red-500/40'}`}

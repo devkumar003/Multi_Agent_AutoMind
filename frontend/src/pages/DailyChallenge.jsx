@@ -14,13 +14,13 @@ const DailyChallenge = () => {
 
     const fetchChallenges = () => {
         const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-        axios.get("http://127.0.0.1:8000/api/challenges", config).then(res => setChallenges(res.data)).catch(console.error);
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/challenges`, config).then(res => setChallenges(res.data)).catch(console.error);
     };
 
     useEffect(() => {
         if (!token) return;
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        axios.get("http://127.0.0.1:8000/api/user/profile", config).then(res => setStats(res.data.stats)).catch(console.error);
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/user/profile`, config).then(res => setStats(res.data.stats)).catch(console.error);
         fetchChallenges();
     }, [token]);
 
@@ -28,7 +28,7 @@ const DailyChallenge = () => {
         setIsGenerating(true);
         try {
             const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-            await axios.post("http://127.0.0.1:8000/api/challenges/generate", {}, config);
+            await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/challenges/generate`, {}, config);
             fetchChallenges();
         } catch (error) {
             console.error("Failed to generate AI challenge", error);

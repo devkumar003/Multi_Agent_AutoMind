@@ -22,7 +22,7 @@ export default function ContestArena() {
     useEffect(() => {
         if (!contest || !token) return;
         
-        axios.get(`http://127.0.0.1:8000/api/contests/${contest.id}`, {
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/contests/${contest.id}`, {
             headers: { Authorization: `Bearer ${token}` }
         }).then(res => {
             setChallenges(res.data.challenges);
@@ -41,7 +41,7 @@ export default function ContestArena() {
     
     const fetchLeaderboard = () => {
         if (!contest) return;
-        axios.get(`http://127.0.0.1:8000/api/contests/${contest.id}/leaderboard`, {
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/contests/${contest.id}/leaderboard`, {
             headers: { Authorization: `Bearer ${token}` }
         }).then(res => setLeaderboard(res.data)).catch(console.error);
     }
@@ -51,7 +51,7 @@ export default function ContestArena() {
         setIsRunning(true);
         setOutput("Executing secure sandbox environment...\nRunning test cases...\n");
         try {
-            const res = await axios.post("http://127.0.0.1:8000/api/challenge/submit", {
+            const res = await axios.post(`${import.meta.env.VITE_CLOUD_API_URL}/api/challenge/submit`, {
                 challenge_id: activeChallenge.id,
                 code: code,
                 contest_id: contest.id

@@ -14,7 +14,7 @@ const History = () => {
         setIsLoading(true);
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            const res = await axios.get("http://127.0.0.1:8000/api/history", { headers });
+            const res = await axios.get(`${import.meta.env.VITE_LOCAL_API_URL}/api/history`, { headers });
             setHistory(res.data);
         } catch (err) {
             console.error(err);
@@ -31,7 +31,7 @@ const History = () => {
         if (!window.confirm("Are you sure you want to delete all activity history?")) return;
         try {
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            await axios.delete("http://127.0.0.1:8000/api/history", { headers });
+            await axios.delete(`${import.meta.env.VITE_LOCAL_API_URL}/api/history`, { headers });
             setHistory([]);
         } catch (err) {
             alert("Failed to clear history.");

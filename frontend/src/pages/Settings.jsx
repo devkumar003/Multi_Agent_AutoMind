@@ -12,7 +12,7 @@ const Settings = () => {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const res = await axios.get("http://127.0.0.1:8000/api/system/status");
+                const res = await axios.get(`${import.meta.env.VITE_LOCAL_API_URL}/api/system/status`);
                 setStatus(res.data);
             } catch (err) {
                 setStatus({ status: 'offline', message: 'Backend unreachable.' });
@@ -30,7 +30,7 @@ const Settings = () => {
         if (!window.confirm("Are you sure you want to clear all uploaded CSVs and temporary data?")) return;
         setIsClearing(true);
         try {
-            const res = await axios.post("http://127.0.0.1:8000/api/settings/clear-cache");
+            const res = await axios.post(`${import.meta.env.VITE_LOCAL_API_URL}/api/settings/clear-cache`);
             if (res.data.success) {
                 alert(`Successfully deleted ${res.data.files_deleted} temporary files.`);
             }

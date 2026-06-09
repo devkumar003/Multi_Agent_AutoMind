@@ -11,7 +11,7 @@ export default function ContestList() {
 
     useEffect(() => {
         if (token) {
-            axios.get("http://127.0.0.1:8000/api/contests", {
+            axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/contests`, {
                 headers: { Authorization: `Bearer ${token}` }
             }).then(res => setContests(res.data)).catch(console.error);
         }

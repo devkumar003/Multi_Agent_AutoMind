@@ -10,7 +10,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!token) return;
-    axios.get("http://127.0.0.1:8000/api/admin/dashboard-stats", {
+    axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/dashboard-stats`, {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
       setStats(res.data);

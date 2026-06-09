@@ -10,7 +10,7 @@ export default function AdminChallenges() {
     const [challenges, setChallenges] = useState([]);
 
     const fetchChallenges = () => {
-        axios.get("http://127.0.0.1:8000/api/admin/challenges", {
+        axios.get(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges`, {
             headers: { Authorization: `Bearer ${token}` }
         }).then(res => setChallenges(res.data)).catch(console.error);
     };
@@ -32,7 +32,7 @@ export default function AdminChallenges() {
     const handleDelete = async (id) => {
         if (!window.confirm("Delete this challenge?")) return;
         try {
-            await axios.delete(`http://127.0.0.1:8000/api/admin/challenges/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_CLOUD_API_URL}/api/admin/challenges/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchChallenges();
