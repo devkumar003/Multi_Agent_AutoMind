@@ -205,10 +205,14 @@ def submit_challenge(req: ChallengeSubmitReq, db: Session = Depends(get_db), cur
 
     if passed_all:
         # Update User XP & Streak
+        # Update User XP & Streak
         u = db.query(UserStats).filter(UserStats.user_id == current_user.id).first()
         if u:
             u.xp_points += sub.score
             u.streak_days += 1
+        else:
+            u = UserStats(user_id=current_user.id, xp_points=sub.score, streak_days=1)
+            db.add(u)
             
         # Update Contest Participant Score if in contest
         if req.contest_id:

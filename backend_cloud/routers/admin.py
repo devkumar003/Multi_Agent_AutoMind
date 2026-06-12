@@ -184,8 +184,17 @@ def create_contest(req: ContestReq, db: Session = Depends(get_db), admin: User =
     if existing:
         raise HTTPException(status_code=400, detail="Contest ID already exists.")
         
-    st = datetime.datetime.fromisoformat(req.start_time.replace("Z", "+00:00"))
-    et = datetime.datetime.fromisoformat(req.end_time.replace("Z", "+00:00"))
+    st_str = req.start_time.replace("Z", "")
+    if "+" in st_str: st_str = st_str.split("+")[0]
+    et_str = req.end_time.replace("Z", "")
+    if "+" in et_str: et_str = et_str.split("+")[0]
+    
+    st = datetime.datetime.fromisoformat(st_str)
+    et = datetime.datetime.fromisoformat(et_str)
+    
+    # Strip tzinfo to make it naive
+    st = st.replace(tzinfo=None)
+    et = et.replace(tzinfo=None)
         
     new_contest = Contest(
         id=req.id,
@@ -205,8 +214,17 @@ def update_contest(contest_id: str, req: ContestReq, db: Session = Depends(get_d
     if not c:
         raise HTTPException(status_code=404, detail="Contest not found")
         
-    st = datetime.datetime.fromisoformat(req.start_time.replace("Z", "+00:00"))
-    et = datetime.datetime.fromisoformat(req.end_time.replace("Z", "+00:00"))
+    st_str = req.start_time.replace("Z", "")
+    if "+" in st_str: st_str = st_str.split("+")[0]
+    et_str = req.end_time.replace("Z", "")
+    if "+" in et_str: et_str = et_str.split("+")[0]
+    
+    st = datetime.datetime.fromisoformat(st_str)
+    et = datetime.datetime.fromisoformat(et_str)
+    
+    # Strip tzinfo to make it naive
+    st = st.replace(tzinfo=None)
+    et = et.replace(tzinfo=None)
     
     c.title = req.title
     c.description = req.description

@@ -12,10 +12,15 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
         guest = db.query(User).filter(User.username == "Guest").first()
         if not guest:
             import uuid
-            guest = User(clerk_id=str(uuid.uuid4()), username="Guest", email="guest@example.com", hashed_password="no", is_admin=1)
+            from db import UserStats
+            guest = User(clerk_id=str(uuid.uuid4()), username="Guest", email="guest@example.com", hashed_password="no", is_admin=0)
             db.add(guest)
             db.commit()
             db.refresh(guest)
+            
+            stats = UserStats(user_id=guest.id, streak_days=0, xp_points=0)
+            db.add(stats)
+            db.commit()
         return guest
 
     if not token:
@@ -35,6 +40,7 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
         
         # Lazy creation if user doesn't exist yet
         if not user:
+            from db import UserStats
             user = User(
                 clerk_id=clerk_id, 
                 username=request.headers.get("X-User-Name", clerk_id[:8]), 
@@ -45,6 +51,10 @@ async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)
             db.add(user)
             db.commit()
             db.refresh(user)
+            
+            stats = UserStats(user_id=user.id, streak_days=0, xp_points=0)
+            db.add(stats)
+            db.commit()
             
         return user
     except Exception as e:
