@@ -1,0 +1,16 @@
+directories:
+  output: dist_electron
+  buildResources: build
+appId: com.automind.app
+productName: AutoMind
+win:
+  target: nsis
+  icon: assets/icon.ico
+extraResources:
+  - from: ../backend/dist/backend.exe
+    to: backend.exe
+files:
+  - filter:
+      - dist/**/*
+      - electron/**/*
+electronVersion: 42.4.0

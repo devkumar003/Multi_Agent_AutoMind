@@ -58,6 +58,8 @@ const Layout = ({ children }) => {
     const [cloudStatus, setCloudStatus] = useState('checking');
     const [isAdmin, setIsAdmin] = useState(false);
     const { getToken } = useAuth();
+    const [showOllamaModal, setShowOllamaModal] = useState(false);
+    const [installingOllama, setInstallingOllama] = useState(false);
 
     // Fetch user profile to check admin status
     useEffect(() => {
@@ -160,6 +162,22 @@ const Layout = ({ children }) => {
             setShowUpgradeModal(true);
         } else {
             setActivePage(item.id);
+        }
+    };
+
+    const handleInstallOllama = async () => {
+        if (window.electronAPI && window.electronAPI.installOllama) {
+            setInstallingOllama(true);
+            const result = await window.electronAPI.installOllama();
+            setInstallingOllama(false);
+            if (result.success) {
+                alert("Ollama installed successfully! The local AI will now be available.");
+                setShowOllamaModal(false);
+            } else {
+                alert("Failed to install Ollama: " + result.message);
+            }
+        } else {
+            alert("This feature is only available in the desktop application.");
         }
     };
 
@@ -321,7 +339,10 @@ const Layout = ({ children }) => {
                     
                     {/* AI Status Panel (Replaces Search) */}
                     <div 
-                        onClick={() => setIsCommandPaletteOpen(true)}
+                        onClick={() => {
+                            if (aiStatus.status !== 'connected') setShowOllamaModal(true);
+                            else setIsCommandPaletteOpen(true);
+                        }}
                         className="flex items-center gap-4 bg-panel border border-border-light hover:bg-panel-hover hover:border-border-medium px-4 py-2 rounded-xl cursor-pointer transition-all group shadow-inner"
                     >
                         <div className="flex items-center gap-2 border-r border-border-medium pr-4">
@@ -330,7 +351,7 @@ const Layout = ({ children }) => {
                                 <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${aiStatus.status === 'connected' ? 'bg-accent-primary shadow-[0_0_8px_var(--accent-primary)]' : 'bg-accent-danger shadow-[0_0_8px_var(--accent-danger)]'}`}></span>
                             </span>
                             <span className="text-xs font-bold text-text-secondary tracking-wide group-hover:text-text-primary transition-colors">
-                                {aiStatus.status === 'connected' ? 'Ollama Connected' : 'Ollama Offline'}
+                                {aiStatus.status === 'connected' ? 'Ollama Connected' : 'Ollama Offline (Click to Install)'}
                             </span>
                         </div>
                         <div className="flex items-center gap-2 border-r border-border-medium pr-4">
@@ -449,6 +470,35 @@ const Layout = ({ children }) => {
                                     </button>
                                 </SignInButton>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Ollama Installation Modal */}
+            {showOllamaModal && (
+                <div className="absolute inset-0 z-[100] flex items-center justify-center bg-bg-base/80 backdrop-blur-md px-4 animate-in fade-in duration-200">
+                    <div className="glass-panel p-8 max-w-lg w-full relative overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent-primary to-accent-secondary"></div>
+                        <h2 className="text-2xl font-black text-text-primary mb-2 uppercase">Missing Ollama Dependency</h2>
+                        <p className="text-text-secondary text-sm mb-6">
+                            Ollama is required to run AI models locally. It seems it is not installed or currently offline. Would you like to automatically install it via Winget?
+                        </p>
+                        <div className="flex gap-3">
+                            <button 
+                                onClick={() => setShowOllamaModal(false)}
+                                className="flex-1 py-3 px-4 bg-panel hover:bg-panel-hover text-text-primary rounded-xl transition-all text-sm font-bold uppercase border border-border-light"
+                                disabled={installingOllama}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleInstallOllama}
+                                className="flex-1 py-3 px-4 bg-gradient-to-r from-accent-secondary to-accent-primary text-white rounded-xl transition-all text-sm font-bold uppercase hover:scale-105 disabled:opacity-50"
+                                disabled={installingOllama}
+                            >
+                                {installingOllama ? "Installing..." : "Install via Winget"}
+                            </button>
                         </div>
                     </div>
                 </div>

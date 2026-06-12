@@ -110,6 +110,9 @@ async def clean_data(req: DataCleanReq, current_user = Depends(get_current_user)
         def parse_numeric_text(val):
             if pd.isnull(val): return val
             val_str = str(val).lower().strip()
+            if val_str in ['nan', 'none', 'null', 'na', 'n/a', '']:
+                return np.nan
+                
             if re.match(r'^-?\d+(\.\d+)?[km]$', val_str):
                 num = float(re.findall(r'-?\d+(?:\.\d+)?', val_str)[0])
                 if 'k' in val_str: return num * 1000
@@ -146,13 +149,17 @@ async def clean_data(req: DataCleanReq, current_user = Depends(get_current_user)
             return val
 
         for col in df.columns:
-            if df[col].dtype == 'object':
+            if not pd.api.types.is_numeric_dtype(df[col]):
                 df[col] = df[col].apply(parse_numeric_text)
                 try:
-                    df_temp = pd.to_numeric(df[col])
-                    df[col] = df_temp
-                    summary.append(f"- **Formatting**: Parsed numeric strings in column '{col}'.")
-                    continue
+                    df_temp = pd.to_numeric(df[col], errors='coerce')
+                    # If at least 50% of non-null values converted successfully, treat as numeric
+                    non_null_count = df[col].notna().sum()
+                    converted_count = df_temp.notna().sum()
+                    if non_null_count > 0 and converted_count / non_null_count >= 0.5:
+                        df[col] = df_temp
+                        summary.append(f"- **Formatting**: Parsed numeric strings in column '{col}'.")
+                        continue
                 except:
                     pass
                 
@@ -164,8 +171,9 @@ async def clean_data(req: DataCleanReq, current_user = Depends(get_current_user)
                     except:
                         pass
                 
+                # Only apply string processing to genuinely text columns
                 df[col] = df[col].astype(str).str.strip().str.title()
-                df[col] = df[col].replace({'Nan': np.nan, 'None': np.nan, '': np.nan})
+                df[col] = df[col].replace({'Nan': np.nan, 'None': np.nan, 'Nat': np.nan, '': np.nan})
                 
                 if 'gender' in col.lower() or 'sex' in col.lower():
                     df[col] = df[col].replace({'M': 'Male', 'F': 'Female'})
@@ -266,19 +274,21 @@ async def query_data(req: DataQueryReq, current_user = Depends(get_current_user)
         res = await qwen.ainvoke(prompt)
         clean_code = res.content.replace("```python", "").replace("```", "").strip()
         
-        with tempfile.NamedTemporaryFile("w+", suffix=".py", delete=False, encoding="utf-8") as f:
-            f.write("import pandas as pd\nimport numpy as np\nimport scipy.stats as stats\nimport math\n\n")
-            f.write(clean_code)
-            temp_path = f.name
-            
+        clean_code = clean_code.replace("plt.show()", "plt.savefig('plot_output.png')")
+        
+        full_code = f"import pandas as pd\nimport numpy as np\nimport math\nimport matplotlib\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as plt\n\n{clean_code}"
+        
+        import io
+        import contextlib
+        import traceback
+        
+        f = io.StringIO()
         try:
-            execution = subprocess.run(["python", temp_path], capture_output=True, text=True, timeout=30)
-            output = execution.stdout if execution.returncode == 0 else f"Error:\n{execution.stderr}"
+            with contextlib.redirect_stdout(f):
+                exec(full_code, {})
+            output = f.getvalue()
         except Exception as e:
-            output = f"Execution engine error: {str(e)}"
-        finally:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
+            output = f"Execution engine error: {str(e)}\n\nTraceback:\n{traceback.format_exc()}\n\nCode generated:\n{clean_code}"
                 
         image_data = None
         if os.path.exists("plot_output.png"):

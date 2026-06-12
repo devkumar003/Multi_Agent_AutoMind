@@ -2,6 +2,8 @@
 node_modules/
 dist/
 build/
+out/
+release/
 
 # Python
 __pycache__/
@@ -32,3 +34,13 @@ Thumbs.db
 # Databases
 *.db
 *.sqlite3
+
+# App Data & Uploads
+uploads/
+.tempmediaStorage/
+
+# PyInstaller / Build Artifacts
+*.spec
+*.exe
+backend/build/
+backend/dist/
