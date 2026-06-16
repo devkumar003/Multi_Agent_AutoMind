@@ -10,6 +10,59 @@ The platform includes six distinct modules natively embedded inside the dashboar
 5. **Admin & Contest Engine**: A full management suite to create custom algorithmic challenges, schedule live global contests, manage user roles, and automatically generate hidden boundary test cases using AI (`Qwen2.5-Coder`).
 6. **Global Arenas**: A competitive real-time split-pane IDE where users solve complex contest algorithms against hidden test assertions while racing on a live updating leaderboard.
 
+
+---
+
+## 📂 Folder Structure
+
+```text
+Multi_Agent_AutoMind/
+├── backend/                  # Local FastAPI Backend
+│   ├── models/               # Database schemas and SQLAlchemy definitions
+│   │   └── schemas.py
+│   ├── routers/              # API Route Handlers (Auth, Code, Data, User)
+│   │   ├── auth.py
+│   │   ├── code.py
+│   │   ├── data.py
+│   │   └── user.py
+│   ├── admin.py              # Contest & challenge admin backend logic
+│   ├── db.py                 # SQLite local connection initialization
+│   ├── graph.py              # LangGraph multi-agent swarm state definition
+│   ├── llm.py                # Ollama client initialization & configuration
+│   ├── main.py               # FastAPI main server & middleware setup
+│   ├── nodes.py              # LangGraph agent node execution logic (Research, Reasoning, etc.)
+│   ├── run.py                # Server startup script (runs on port 1007)
+│   └── tools.py              # Custom agent execution tools (sandbox python execution)
+├── backend_cloud/            # Optional cloud backend features (global contests)
+│   ├── routers/              # Cloud API routes
+│   └── main.py               # FastAPI cloud server setup
+├── frontend/                 # React (Vite) & Electron Frontend
+│   ├── electron/             # Electron desktop configuration
+│   │   ├── main.cjs          # Electron main background process
+│   │   └── preload.cjs       # Electron secure IPC bridge preload script
+│   ├── src/                  # React Application Source
+│   │   ├── components/       # Reusable layout and custom UI components
+│   │   │   ├── ActivityLog.jsx
+│   │   │   ├── AgentWorkflow.jsx
+│   │   │   ├── InputPanel.jsx
+│   │   │   ├── Layout.jsx
+│   │   │   └── OutputPanel.jsx
+│   │   ├── pages/            # View Pages for routing
+│   │   │   ├── admin/        # Challenge creation dashboard
+│   │   │   ├── contest/      # Global Arena / split-pane contest UI
+│   │   │   ├── AIChat.jsx    # LangGraph visual multi-agent swarm execution
+│   │   │   ├── CodeLab.jsx   # Python sandbox playground
+│   │   │   ├── DataLab.jsx   # Interactive CSV AI data analyst
+│   │   │   └── Dashboard.jsx # Main dashboard view
+│   │   ├── App.jsx           # Main routing & state setup
+│   │   ├── main.jsx          # React initialization entry point
+│   │   └── index.css         # Styling system (Glassmorphism & dark theme)
+│   ├── tailwind.config.js    # Styling layout configs
+│   └── vite.config.js        # Vite build configurations
+├── Documents/                # Project Documentation
+└── README.md                 # Main Documentation
+```
+
 ---
 
 ## Prerequisites
@@ -81,6 +134,13 @@ Once both terminals are running, simply open your favorite web browser and navig
 http://localhost:5173
 ```
 You are now successfully inside AutoMind!
+
+---
+
+## 📥 Download Desktop Application
+
+You can download the pre-packaged standalone executable (`.exe`) directly from:
+👉 **[Download AutoMind (.exe)](https://automind-six.vercel.app/)**
 
 ---
 
